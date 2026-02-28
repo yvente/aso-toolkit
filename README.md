@@ -22,7 +22,8 @@ Analyzes your app's source code and keyword data to produce optimized App Store 
 **Install:**
 
 ```bash
-ln -s /path/to/aso-toolkit/skills/aso-optimize.md ~/.claude/commands/aso-optimize.md
+curl -fsSL https://raw.githubusercontent.com/yvente/aso-toolkit/main/skills/aso-optimize.md \
+  -o ~/.claude/commands/aso-optimize.md
 ```
 
 **Usage:**
@@ -63,6 +64,6 @@ Coming in Phase 2 — will expose the same workflow as an MCP tool, usable from 
 ## Roadmap
 
 - [x] Claude Code Skill (`/aso-optimize`)
-- [ ] Install script (`curl | sh`)
+- [x] Install script (`curl`)
 - [ ] MCP server — support Claude Desktop, Cursor, Windsurf and other MCP-compatible clients
 - [ ] Standalone CLI — no Claude dependency required
