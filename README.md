@@ -9,11 +9,54 @@ Pairs with [ASOMinds](https://asominds.com/) for data-driven ASO automation.
 ```
 aso-toolkit/
 ├── skills/
-│   └── aso-optimize.md   # Claude Code slash command
+│   ├── aso-optimize.md   # Claude Code slash command
+│   └── aso-strategy.md   # Claude Code slash command
 └── mcp/                  # MCP server (coming soon)
 ```
 
 ## Skills
+
+### `/aso-strategy`
+
+Discovers and segments competitors, analyzes their App Store presence, and produces an ASO growth strategy report — including screenshot visual analysis and immediate metadata recommendations.
+
+Run this before `/aso-optimize` to identify the right competitors and build your initial keyword pack.
+
+**Install:**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/yvente/aso-toolkit/main/skills/aso-strategy.md \
+  -o ~/.claude/commands/aso-strategy.md
+```
+
+**Usage:**
+
+```bash
+# From a directory with APP_BRIEF.md or source code
+/aso-strategy --code-path ./MyApp
+
+# Target a specific locale
+/aso-strategy --code-path ./MyApp --locale ja
+
+# Without code path: Claude will ask you to describe your app
+/aso-strategy
+```
+
+**Parameters:**
+
+| Parameter | Required | Description |
+|---|---|---|
+| `--code-path` | — | App source code path or directory containing APP_BRIEF.md |
+| `--locale` | — | Target App Store locale (default: en-US) |
+
+**Workflow:**
+1. Builds app profile from `APP_BRIEF.md`, source code scan, or interactive description
+2. Discovers 10–15 competitor candidates via targeted web searches
+3. Segments into **对标组** (3–5 benchmark competitors, for keyword gap analysis) and **参考组** (2–3 category leaders, for visual/CRO learning)
+4. Analyzes 对标组 metadata and keyword signals; downloads and analyzes first 3 screenshots from 参考组; extracts review pain points
+5. Outputs strategy report with App Name candidates, 100-char keyword pack, and first 3 screenshots strategy
+
+---
 
 ### `/aso-optimize`
 
@@ -71,6 +114,7 @@ Coming in Phase 2 — will expose the same workflow as an MCP tool, usable from 
 ## Roadmap
 
 - [x] Claude Code Skill (`/aso-optimize`)
+- [x] Claude Code Skill (`/aso-strategy`)
 - [x] Install script (`curl`)
 - [ ] MCP server — support Claude Desktop, Cursor, Windsurf and other MCP-compatible clients
 - [ ] Standalone CLI — no Claude dependency required
