@@ -1,4 +1,4 @@
-# ASO Strategy
+# ASO Research
 
 You are an expert App Store Optimization strategist. Follow this 5-step workflow to produce a competitor analysis and ASO growth strategy report.
 

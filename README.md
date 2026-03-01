@@ -10,13 +10,13 @@ Pairs with [ASOMinds](https://asominds.com/) for data-driven ASO automation.
 aso-toolkit/
 ├── skills/
 │   ├── aso-optimize.md   # Claude Code slash command
-│   └── aso-strategy.md   # Claude Code slash command
+│   └── aso-research.md   # Claude Code slash command
 └── mcp/                  # MCP server (coming soon)
 ```
 
 ## Skills
 
-### `/aso-strategy`
+### `/aso-research`
 
 Discovers and segments competitors, analyzes their App Store presence, and produces an ASO growth strategy report — including screenshot visual analysis and immediate metadata recommendations.
 
@@ -25,21 +25,21 @@ Run this before `/aso-optimize` to identify the right competitors and build your
 **Install:**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yvente/aso-toolkit/main/skills/aso-strategy.md \
-  -o ~/.claude/commands/aso-strategy.md
+curl -fsSL https://raw.githubusercontent.com/yvente/aso-toolkit/main/skills/aso-research.md \
+  -o ~/.claude/commands/aso-research.md
 ```
 
 **Usage:**
 
 ```bash
 # From a directory with APP_BRIEF.md or source code
-/aso-strategy --code-path ./MyApp
+/aso-research --code-path ./MyApp
 
 # Target a specific locale
-/aso-strategy --code-path ./MyApp --locale ja
+/aso-research --code-path ./MyApp --locale ja
 
 # Without code path: Claude will ask you to describe your app
-/aso-strategy
+/aso-research
 ```
 
 **Parameters:**
@@ -114,7 +114,7 @@ Coming in Phase 2 — will expose the same workflow as an MCP tool, usable from 
 ## Roadmap
 
 - [x] Claude Code Skill (`/aso-optimize`)
-- [x] Claude Code Skill (`/aso-strategy`)
+- [x] Claude Code Skill (`/aso-research`)
 - [x] Install script (`curl`)
 - [ ] MCP server — support Claude Desktop, Cursor, Windsurf and other MCP-compatible clients
 - [ ] Standalone CLI — no Claude dependency required
