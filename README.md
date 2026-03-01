@@ -17,7 +17,7 @@ aso-toolkit/
 
 ### `/aso-optimize`
 
-Analyzes your app's source code and keyword data to produce optimized App Store metadata.
+Produces optimized App Store metadata from your app brief, current metadata, and keyword data.
 
 **Install:**
 
@@ -29,15 +29,21 @@ curl -fsSL https://raw.githubusercontent.com/yvente/aso-toolkit/main/skills/aso-
 **Usage:**
 
 ```bash
+# First run: scans source code and generates APP_BRIEF.md
 /aso-optimize --metadata ~/Downloads/metadata.csv --code-path ./MyApp
 
-# With keyword data from ASOMinds
+# Subsequent runs: reads APP_BRIEF.md directly (fast)
+/aso-optimize --metadata ~/Downloads/metadata.csv
+
+# With keyword data from a research tool (e.g. Astro)
 /aso-optimize \
   --metadata ~/Downloads/metadata.csv \
-  --code-path ./MyApp \
   --keywords ~/Desktop/my-app-keywords.csv \
   --competitors ~/Desktop/comp1.csv ~/Desktop/comp2.csv \
   --locale en-US
+
+# After a major feature update: re-scan source code
+/aso-optimize --metadata ~/Downloads/metadata.csv --code-path ./MyApp --refresh-brief
 ```
 
 **Parameters:**
@@ -46,16 +52,17 @@ curl -fsSL https://raw.githubusercontent.com/yvente/aso-toolkit/main/skills/aso-
 |---|---|---|
 | `--metadata` | ✅ | Path to current ASO metadata CSV |
 | `--code-path` | — | App source code path (default: current dir) |
-| `--keywords` | — | Own app keyword CSV from ASOMinds |
+| `--keywords` | — | Own app keyword CSV from a research tool e.g. Astro |
 | `--competitors` | — | Competitor keyword CSVs (supports multiple) |
 | `--locale` | — | Target locale (default: en-US) |
+| `--refresh-brief` | — | Force re-scan source code and regenerate APP_BRIEF.md |
 
 **Workflow:**
-1. Reads app source code to understand features and differentiators
-2. Loads current metadata to establish baseline
-3. Searches Apple docs + reputable ASO sources for best practices
-4. Analyzes keyword data (popularity > 20, difficulty < 70)
-5. Outputs optimized metadata with before/after comparison
+1. Reads `APP_BRIEF.md` if present; otherwise scans source code and generates it
+2. Loads current metadata CSV (supports ASOMinds export and custom formats)
+3. Applies inlined Apple ASO rules + one targeted category keyword search
+4. Analyzes keyword data: preserves top-10 rankings, filters by popularity/difficulty
+5. Outputs optimized metadata with before/after comparison and keyword rationale
 
 ## MCP Server
 
