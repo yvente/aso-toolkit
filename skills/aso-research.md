@@ -9,6 +9,10 @@ Parse the following from: $ARGUMENTS
 - `--code-path <path>` — App source code path or directory containing APP_BRIEF.md (optional)
 - `--locale <locale>` — Target App Store locale (default: en-US)
 
+**Output files** (written to `--code-path`, or current directory if not set):
+- `APP_BRIEF.md` — app profile; created when built from source code or user description; shared with `/aso-optimize`
+- `ASO_RESEARCH.md` — full strategy report; always written at the end of Step 5
+
 ---
 
 ## Step 1 · Build App Profile
@@ -23,13 +27,36 @@ Read all sections (Core Features, Target Users, Key Differentiators). Identify a
 
 Scan the source code. Focus on main feature files, views, onboarding flows, and UI copy. Skip assets, tests, and third-party libraries. Extract Core Features, Target Users, Key Differentiators, and app category.
 
+Write the extracted profile to `APP_BRIEF.md` at `--code-path` before proceeding. Fill `Last updated` with today's date. Leave `Recent Changes` as an empty template — it is maintained by the user, not extracted from code.
+
+```markdown
+# App Brief
+
+> Last updated: {today's date}
+
+## Core Features
+<!-- What the app does, from the user's perspective -->
+
+## Target Users
+<!-- Who uses it and what problem it solves for them -->
+
+## Key Differentiators
+<!-- What makes it unique vs alternatives -->
+
+## Recent Changes
+<!-- Update before each release. Describe what changed from the user's perspective. -->
+<!-- Example: Added dark mode / Improved sync speed / Fixed login issue on iOS 18 -->
+```
+
+Inform the user: `` `APP_BRIEF.md` created at `<path>`. Future runs of `/aso-research` and `/aso-optimize` will use this file instead of scanning source code. ``
+
 ### Priority 3 — Neither provided
 
 Ask the user:
 
 > Please describe your app: What does it do? Who is it for? What makes it different from alternatives? Which App Store category does it belong to?
 
-Use the response to build the profile.
+Use the response to build the profile, then write it to `APP_BRIEF.md` in the current directory using the same template as Priority 2. Inform the user where the file was saved.
 
 **Output a Product Profile before proceeding:**
 - App category
@@ -179,3 +206,7 @@ Based on reference competitor analysis:
 - Screenshot 1 — [what to show · suggested headline · rationale]
 - Screenshot 2 — [what to show · suggested headline · rationale]
 - Screenshot 3 — [what to show · suggested headline · rationale]
+
+---
+
+After outputting the report, write the full content above to `ASO_RESEARCH.md` in the same directory as `APP_BRIEF.md` (i.e. `--code-path` or current directory). Inform the user: "Report saved to `<path>/ASO_RESEARCH.md`."

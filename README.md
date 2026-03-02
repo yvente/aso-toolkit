@@ -50,11 +50,11 @@ curl -fsSL https://raw.githubusercontent.com/yvente/aso-toolkit/main/skills/aso-
 | `--locale` | — | Target App Store locale (default: en-US) |
 
 **Workflow:**
-1. Builds app profile from `APP_BRIEF.md`, source code scan, or interactive description
+1. Builds app profile from `APP_BRIEF.md`, source code scan, or interactive description; writes `APP_BRIEF.md` if not already present (shared with `/aso-optimize`)
 2. Discovers 10–15 competitor candidates via targeted web searches
 3. Segments into **对标组** (3–5 benchmark competitors, for keyword gap analysis) and **参考组** (2–3 category leaders, for visual/CRO learning)
 4. Analyzes 对标组 metadata and keyword signals; downloads and analyzes first 3 screenshots from 参考组; extracts review pain points
-5. Outputs strategy report with App Name candidates, 100-char keyword pack, and first 3 screenshots strategy
+5. Outputs strategy report with App Name candidates, 100-char keyword pack, and first 3 screenshots strategy; saves report to `ASO_RESEARCH.md`
 
 ---
 
@@ -74,6 +74,9 @@ curl -fsSL https://raw.githubusercontent.com/yvente/aso-toolkit/main/skills/aso-
 ```bash
 # First run: scans source code and generates APP_BRIEF.md
 /aso-optimize --metadata ~/Downloads/metadata.csv --code-path ./MyApp
+
+# If APP_BRIEF.md was already created by /aso-research, skip --code-path
+/aso-optimize --metadata ~/Downloads/metadata.csv
 
 # Subsequent runs: reads APP_BRIEF.md directly (fast)
 /aso-optimize --metadata ~/Downloads/metadata.csv
