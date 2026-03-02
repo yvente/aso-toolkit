@@ -55,7 +55,7 @@ curl -fsSL https://raw.githubusercontent.com/yvente/aso-toolkit/main/skills/aso-
 
 **Workflow:**
 1. Builds app profile from `APP_BRIEF.md`, source code scan, or interactive description; writes `APP_BRIEF.md` if not already present (shared with `/aso-optimize`)
-2. Discovers 10–15 competitor candidates via targeted web searches
+2. Discovers 10–15 competitor candidates via targeted web searches and the iTunes Search API
 3. Segments into **Benchmark Competitors** (3–5, for keyword gap analysis) and **Reference Competitors** (2–3 category leaders, for visual/CRO learning)
 4. Analyzes Benchmark Competitors metadata and keyword signals; downloads and analyzes first 3 screenshots from Reference Competitors; extracts review pain points
 5. Outputs strategy report with App Name candidates, 100-char keyword pack, and first 3 screenshots strategy; saves report to `ASO_RESEARCH.md`
