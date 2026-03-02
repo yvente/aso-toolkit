@@ -44,6 +44,8 @@ For locales not listed, infer the language name from the locale code.
 
 ## Step 1 · Understand App Functionality
 
+Resolve `--code-path`: if not provided, use the current working directory. All file reads and writes use this resolved path.
+
 Check for `APP_BRIEF.md` in `--code-path`.
 
 ### Path A — Brief exists and `--refresh-brief` is NOT set
@@ -275,7 +277,7 @@ If no keyword data was provided, cite rule or category research:
 
 ---
 
-After outputting the results, write the full content above (summary table + optimized values + keyword change rationale) to `ASO_OPTIMIZE.md` in `--code-path` (or current directory). Prepend the following metadata line as the very first line of the file:
+After outputting the results, write the full content above (summary table + optimized values + keyword change rationale) to `ASO_OPTIMIZE.md` in `--code-path`. Prepend the following metadata line as the very first line of the file:
 
 ```
 > Locale: <locale>
