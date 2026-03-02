@@ -9,6 +9,33 @@ Parse the following from: $ARGUMENTS
 - `--code-path <path>` — App source code path or directory containing APP_BRIEF.md (optional)
 - `--locale <locale>` — Target App Store locale (default: en-US)
 
+**Locale → language name reference** (used when composing search queries):
+
+| Locale | Language |
+|--------|----------|
+| `en-US` | English |
+| `en-GB` | English (UK) |
+| `zh-Hans` | Simplified Chinese |
+| `zh-Hant` | Traditional Chinese |
+| `ja` | Japanese |
+| `ko` | Korean |
+| `de-DE` | German |
+| `fr-FR` | French |
+| `es-ES` | Spanish |
+| `es-MX` | Spanish (Mexico) |
+| `pt-BR` | Portuguese (Brazil) |
+| `pt-PT` | Portuguese (Portugal) |
+| `it` | Italian |
+| `nl-NL` | Dutch |
+| `ru` | Russian |
+| `tr` | Turkish |
+| `ar-SA` | Arabic |
+| `th` | Thai |
+| `id` | Indonesian |
+| `vi` | Vietnamese |
+
+For locales not listed, infer the language name from the locale code.
+
 **Output files** (written to `--code-path`, or current directory if not set):
 - `APP_BRIEF.md` — app profile; created when built from source code or user description; shared with `/aso-optimize`
 - `ASO_RESEARCH.md` — full strategy report; always written at the end of Step 5

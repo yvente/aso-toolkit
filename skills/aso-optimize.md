@@ -13,6 +13,33 @@ Parse the following from: $ARGUMENTS
 - `--locale <locale>` — Target locale to optimize (default: en-US)
 - `--refresh-brief` — Force re-scan source code and overwrite existing APP_BRIEF.md
 
+**Locale → language name reference** (used when composing search queries and writing output):
+
+| Locale | Language |
+|--------|----------|
+| `en-US` | English |
+| `en-GB` | English (UK) |
+| `zh-Hans` | Simplified Chinese |
+| `zh-Hant` | Traditional Chinese |
+| `ja` | Japanese |
+| `ko` | Korean |
+| `de-DE` | German |
+| `fr-FR` | French |
+| `es-ES` | Spanish |
+| `es-MX` | Spanish (Mexico) |
+| `pt-BR` | Portuguese (Brazil) |
+| `pt-PT` | Portuguese (Portugal) |
+| `it` | Italian |
+| `nl-NL` | Dutch |
+| `ru` | Russian |
+| `tr` | Turkish |
+| `ar-SA` | Arabic |
+| `th` | Thai |
+| `id` | Indonesian |
+| `vi` | Vietnamese |
+
+For locales not listed, infer the language name from the locale code.
+
 ---
 
 ## Step 1 · Understand App Functionality
@@ -204,7 +231,7 @@ Apply to competitor keywords and non-ranking own keywords:
 
 ### Writing guidelines
 
-All optimized content must be written in the language of `--locale` (e.g. `ja` → Japanese, `zh-Hans` → Simplified Chinese, `de-DE` → German). Apply these rules while writing each field:
+All optimized content must be written in the language of `--locale` (refer to the locale table in the Arguments section). Apply these rules while writing each field:
 
 - **App Name** — include the primary keyword naturally; every word is indexed with highest weight
 - **Subtitle** — include a secondary keyword; must meaningfully differ from App Name
