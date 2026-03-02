@@ -6,7 +6,7 @@ You are an expert App Store Optimization strategist. Follow this 5-step workflow
 
 Parse the following from: $ARGUMENTS
 
-- `--code-path <path>` — App source code path or directory containing APP_BRIEF.md (optional)
+- `--code-path <path>` — App source code path or directory containing APP_BRIEF.md (defaults to current working directory if not provided)
 - `--locale <locale>` — Target App Store locale (default: en-US)
 - `--refresh-brief` — Force re-scan source code and overwrite existing `APP_BRIEF.md`
 
@@ -37,7 +37,7 @@ Parse the following from: $ARGUMENTS
 
 For locales not listed, infer the language name from the locale code.
 
-**Output files** (written to `--code-path`, or current directory if not set):
+**Output files** (written to `--code-path`, which defaults to current directory):
 - `APP_BRIEF.md` — app profile; created when built from source code or user description; shared with `/aso-optimize`
 - `ASO_RESEARCH.md` — full strategy report; written at the end of Step 5
 
@@ -45,27 +45,31 @@ For locales not listed, infer the language name from the locale code.
 
 ## Step 1 · Build App Profile
 
+Resolve `--code-path`: if not provided, use the current working directory. All file reads and writes use this resolved path.
+
 Determine the app's identity using the following priority order:
 
-### Priority 1 — APP_BRIEF.md exists in `--code-path` (or current directory) and `--refresh-brief` is NOT set
+### Priority 1 — APP_BRIEF.md exists in `--code-path` and `--refresh-brief` is NOT set
 
 Read all sections (Core Features, Target Users, Key Differentiators). Identify app category (e.g. "Photo Editing", "Health & Fitness", "Productivity").
 
-### Priority 2 — `--code-path` provided but no APP_BRIEF.md, OR `--refresh-brief` is set
+### Priority 2 — No APP_BRIEF.md in `--code-path`, OR `--refresh-brief` is set
 
-Scan the source code. Focus on main feature files, views, onboarding flows, and UI copy. Skip assets, tests, and third-party libraries. Extract Core Features, Target Users, Key Differentiators, and app category.
+Scan the source code at `--code-path`. Focus on main feature files, views, onboarding flows, and UI copy. Skip assets, tests, and third-party libraries. Extract Core Features, Target Users, Key Differentiators, and app category.
 
-Write the extracted profile to `APP_BRIEF.md` at `--code-path` before proceeding, using the same format as `/aso-optimize` (sections: Core Features, Target Users, Key Differentiators, Recent Changes). Fill `Last updated` with today's date. Leave `Recent Changes` as an empty template — it is maintained by the user, not extracted from code.
+If no recognizable app source code is found (e.g. the directory is empty or contains only non-app files), fall through to Priority 3.
+
+Otherwise, write the extracted profile to `APP_BRIEF.md` at `--code-path` before proceeding, using the same format as `/aso-optimize` (sections: Core Features, Target Users, Key Differentiators, Recent Changes). Fill `Last updated` with today's date. Leave `Recent Changes` as an empty template — it is maintained by the user, not extracted from code.
 
 Inform the user: `` `APP_BRIEF.md` created (or updated) at `<path>`. Future runs of `/aso-research` and `/aso-optimize` will use this file instead of scanning source code. Re-run with `--refresh-brief` after major feature updates. ``
 
-### Priority 3 — Neither provided
+### Priority 3 — No recognizable app code found
 
 Ask the user:
 
 > Please describe your app: What does it do? Who is it for? What makes it different from alternatives? Which App Store category does it belong to?
 
-Use the response to build the profile, then write it to `APP_BRIEF.md` in the current directory using the same format as Priority 2. Inform the user where the file was saved.
+Use the response to build the profile, then write it to `APP_BRIEF.md` at `--code-path` using the same format as Priority 2. Inform the user where the file was saved.
 
 **Output a Product Profile before proceeding:**
 - App category
