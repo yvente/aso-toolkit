@@ -127,12 +127,14 @@ Close with:
 For each reference competitor:
 
 1. Fetch their App Store page and extract the direct URLs of their first 3 screenshot images
-2. Download each screenshot:
+2. Download each screenshot into a `screenshots/<AppName>/` subdirectory under `--code-path` (or current directory):
    ```bash
-   curl -o screenshot_1.jpg "[url1]"
-   curl -o screenshot_2.jpg "[url2]"
-   curl -o screenshot_3.jpg "[url3]"
+   mkdir -p "<output-dir>/screenshots/<AppName>"
+   curl -o "<output-dir>/screenshots/<AppName>/screenshot_1.jpg" "[url1]"
+   curl -o "<output-dir>/screenshots/<AppName>/screenshot_2.jpg" "[url2]"
+   curl -o "<output-dir>/screenshots/<AppName>/screenshot_3.jpg" "[url3]"
    ```
+   Inform the user: "Screenshots saved to `<output-dir>/screenshots/<AppName>/`."
 3. Read and analyze each screenshot image
 
 For each screenshot analyze:
