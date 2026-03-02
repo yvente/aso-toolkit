@@ -47,9 +47,13 @@ For locales not listed, infer the language name from the locale code.
 
 Before running the workflow, check for `ASO_RESEARCH.md` in `--code-path` (or current directory).
 
-- **File exists and `--refresh` is NOT set:** Read and display the existing report, then inform the user:
-  > `ASO_RESEARCH.md` already exists. Displaying the existing report. Re-run with `--refresh` to perform a new analysis.
-  Stop here — do not proceed to Step 1.
+- **File exists and `--refresh` is NOT set:** Read the first line of the file to extract the recorded locale (format: `> Locale: <locale>`).
+  - If the recorded locale **matches** `--locale`: display the existing report, then inform the user:
+    > `ASO_RESEARCH.md` already exists (locale: `<recorded-locale>`). Displaying the existing report. Re-run with `--refresh` to perform a new analysis.
+    Stop here — do not proceed to Step 1.
+  - If the recorded locale **does not match** `--locale`: inform the user:
+    > `ASO_RESEARCH.md` was generated for locale `<recorded-locale>`, but you requested `<current-locale>`. Re-running analysis for `<current-locale>`.
+    Continue to Step 1 (treat as if `--refresh` were set).
 
 - **File does not exist, or `--refresh` is set:** Continue to Step 1.
 
@@ -251,4 +255,10 @@ Based on reference competitor analysis:
 
 ---
 
-After outputting the report, write the full content above to `ASO_RESEARCH.md` in the same directory as `APP_BRIEF.md` (i.e. `--code-path` or current directory). Inform the user: "Report saved to `<path>/ASO_RESEARCH.md`."
+After outputting the report, write it to `ASO_RESEARCH.md` in the same directory as `APP_BRIEF.md` (i.e. `--code-path` or current directory). Prepend the following metadata line as the very first line of the file, before the report content:
+
+```
+> Locale: <locale>
+```
+
+Inform the user: "Report saved to `<path>/ASO_RESEARCH.md`."
