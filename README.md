@@ -80,10 +80,7 @@ curl -fsSL https://raw.githubusercontent.com/yvente/aso-toolkit/main/skills/aso-
 # First run: scans source code and generates APP_BRIEF.md
 /aso-optimize --metadata ~/Downloads/metadata.csv --code-path ./MyApp
 
-# If APP_BRIEF.md was already created by /aso-research, skip --code-path
-/aso-optimize --metadata ~/Downloads/metadata.csv
-
-# Subsequent runs: reads APP_BRIEF.md directly (fast)
+# Subsequent runs (or if APP_BRIEF.md was already created by /aso-research): reads it directly
 /aso-optimize --metadata ~/Downloads/metadata.csv
 
 # With keyword data from a research tool (e.g. Astro)

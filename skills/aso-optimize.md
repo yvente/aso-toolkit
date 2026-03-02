@@ -164,7 +164,7 @@ Using the app category identified in Step 1 and the language of `--locale`, perf
 
 > "[app category] App Store ASO keywords [locale language] [current year]"
 
-For example: `photo editing App Store ASO keywords Japanese 2026` for `ja`, or `photo editing App Store ASO keywords Simplified Chinese 2026` for `zh-Hans`.
+For example: `photo editing App Store ASO keywords Japanese [current year]` for `ja`, or `photo editing App Store ASO keywords Simplified Chinese [current year]` for `zh-Hans`.
 
 Extract only insights not already covered by the rules above:
 - High-volume category keywords in the target language worth targeting
