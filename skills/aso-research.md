@@ -88,7 +88,7 @@ Aim to identify 10–15 candidates before moving to segmentation.
 
 Classify all candidates into two groups:
 
-### 对标组 — Benchmark Competitors (select 3–5)
+### Benchmark Competitors (select 3–5)
 
 Criteria:
 - Function overlaps significantly with your app
@@ -97,7 +97,7 @@ Criteria:
 
 Purpose: these are the apps competing for the same users — use their keyword data to find gaps.
 
-### 参考组 — Reference Competitors (select 2–3)
+### Reference Competitors (select 2–3)
 
 Criteria:
 - Category leaders with the highest rating counts
@@ -111,7 +111,7 @@ For each selected app note: which group, why selected, rating count, and App Sto
 
 ## Step 4 · Analyze Each Group
 
-### 对标组 Analysis
+### Benchmark Competitors Analysis
 
 For each benchmark competitor:
 1. Fetch their App Store page
@@ -122,7 +122,7 @@ For each benchmark competitor:
 Close with:
 > Recommended next step: export keyword CSVs for these apps from Astro (or a similar keyword research tool) and pass them to `/aso-optimize` via `--competitors` for full data-driven keyword gap analysis.
 
-### 参考组 Analysis
+### Reference Competitors Analysis
 
 For each reference competitor:
 
@@ -157,7 +157,7 @@ Summarize the app's category, core features, target users, and USP in 3–5 sent
 
 ---
 
-### 对标组 — Benchmark Competitors
+### Benchmark Competitors
 
 For each app:
 
@@ -174,7 +174,7 @@ Keyword signal | [notable words from their App Name / Subtitle]
 
 ---
 
-### 参考组 — Reference Competitors
+### Reference Competitors
 
 For each app:
 
