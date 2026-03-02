@@ -113,7 +113,7 @@ curl -fsSL https://raw.githubusercontent.com/yvente/aso-toolkit/main/skills/aso-
 2. Loads current metadata CSV (supports ASOMinds export and custom formats)
 3. Applies inlined Apple ASO rules + one targeted category keyword search
 4. Analyzes keyword data: preserves top-10 rankings, filters by popularity/difficulty
-5. Outputs optimized metadata with before/after comparison and keyword rationale
+5. Outputs optimized metadata with before/after comparison and keyword rationale; saves results to `ASO_OPTIMIZE.md`
 
 ## MCP Server
 

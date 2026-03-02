@@ -272,3 +272,13 @@ If `--keywords` / `--competitors` were provided, cite data:
 If no keyword data was provided, cite rule or category research:
 - Added: `[keyword]` — [e.g. high-volume category term from Step 3 research]
 - Removed: `[keyword]` — [e.g. duplicates word in App Name / generic article]
+
+---
+
+After outputting the results, write the full content above (summary table + optimized values + keyword change rationale) to `ASO_OPTIMIZE.md` in `--code-path` (or current directory). Prepend the following metadata line as the very first line of the file:
+
+```
+> Locale: <locale>
+```
+
+Inform the user: "Results saved to `<path>/ASO_OPTIMIZE.md`."
