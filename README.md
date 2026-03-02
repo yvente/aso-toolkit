@@ -38,7 +38,7 @@ curl -fsSL https://raw.githubusercontent.com/yvente/aso-toolkit/main/skills/aso-
 # Target a specific locale
 /aso-research --code-path ./MyApp --locale ja
 
-# Without code path: Claude will ask you to describe your app
+# Without code path: scans current directory (or asks if no app code found)
 /aso-research
 
 # After a major feature update: re-scan source code and regenerate APP_BRIEF.md
@@ -49,7 +49,7 @@ curl -fsSL https://raw.githubusercontent.com/yvente/aso-toolkit/main/skills/aso-
 
 | Parameter | Required | Description |
 |---|---|---|
-| `--code-path` | — | App source code path or directory containing APP_BRIEF.md |
+| `--code-path` | — | App source code path or directory containing APP_BRIEF.md (default: current dir) |
 | `--locale` | — | Target App Store locale (default: en-US) |
 | `--refresh-brief` | — | Force re-scan source code and regenerate APP_BRIEF.md |
 
