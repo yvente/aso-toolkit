@@ -8,6 +8,7 @@ Parse the following from: $ARGUMENTS
 
 - `--code-path <path>` — App source code path or directory containing APP_BRIEF.md (optional)
 - `--locale <locale>` — Target App Store locale (default: en-US)
+- `--refresh` — Force re-run the full workflow and overwrite existing `ASO_RESEARCH.md`
 
 **Locale → language name reference** (used when composing search queries):
 
@@ -38,7 +39,19 @@ For locales not listed, infer the language name from the locale code.
 
 **Output files** (written to `--code-path`, or current directory if not set):
 - `APP_BRIEF.md` — app profile; created when built from source code or user description; shared with `/aso-optimize`
-- `ASO_RESEARCH.md` — full strategy report; always written at the end of Step 5
+- `ASO_RESEARCH.md` — full strategy report; written at the end of Step 5
+
+---
+
+## Existing Report Check
+
+Before running the workflow, check for `ASO_RESEARCH.md` in `--code-path` (or current directory).
+
+- **File exists and `--refresh` is NOT set:** Read and display the existing report, then inform the user:
+  > `ASO_RESEARCH.md` already exists. Displaying the existing report. Re-run with `--refresh` to perform a new analysis.
+  Stop here — do not proceed to Step 1.
+
+- **File does not exist, or `--refresh` is set:** Continue to Step 1.
 
 ---
 

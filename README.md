@@ -40,6 +40,9 @@ curl -fsSL https://raw.githubusercontent.com/yvente/aso-toolkit/main/skills/aso-
 
 # Without code path: Claude will ask you to describe your app
 /aso-research
+
+# Re-run analysis and overwrite existing ASO_RESEARCH.md
+/aso-research --code-path ./MyApp --refresh
 ```
 
 **Parameters:**
@@ -48,13 +51,15 @@ curl -fsSL https://raw.githubusercontent.com/yvente/aso-toolkit/main/skills/aso-
 |---|---|---|
 | `--code-path` | — | App source code path or directory containing APP_BRIEF.md |
 | `--locale` | — | Target App Store locale (default: en-US) |
+| `--refresh` | — | Force re-run the full workflow and overwrite existing `ASO_RESEARCH.md` |
 
 **Workflow:**
-1. Builds app profile from `APP_BRIEF.md`, source code scan, or interactive description; writes `APP_BRIEF.md` if not already present (shared with `/aso-optimize`)
-2. Discovers 10–15 competitor candidates via targeted web searches
-3. Segments into **Benchmark Competitors** (3–5, for keyword gap analysis) and **Reference Competitors** (2–3 category leaders, for visual/CRO learning)
-4. Analyzes Benchmark Competitors metadata and keyword signals; downloads and analyzes first 3 screenshots from Reference Competitors; extracts review pain points
-5. Outputs strategy report with App Name candidates, 100-char keyword pack, and first 3 screenshots strategy; saves report to `ASO_RESEARCH.md`
+1. If `ASO_RESEARCH.md` already exists and `--refresh` is not set, displays the existing report and stops
+2. Builds app profile from `APP_BRIEF.md`, source code scan, or interactive description; writes `APP_BRIEF.md` if not already present (shared with `/aso-optimize`)
+3. Discovers 10–15 competitor candidates via targeted web searches
+4. Segments into **Benchmark Competitors** (3–5, for keyword gap analysis) and **Reference Competitors** (2–3 category leaders, for visual/CRO learning)
+5. Analyzes Benchmark Competitors metadata and keyword signals; downloads and analyzes first 3 screenshots from Reference Competitors; extracts review pain points
+6. Outputs strategy report with App Name candidates, 100-char keyword pack, and first 3 screenshots strategy; saves report to `ASO_RESEARCH.md`
 
 ---
 
