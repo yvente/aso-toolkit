@@ -71,26 +71,7 @@ Read all sections (Core Features, Target Users, Key Differentiators). Identify a
 
 Scan the source code. Focus on main feature files, views, onboarding flows, and UI copy. Skip assets, tests, and third-party libraries. Extract Core Features, Target Users, Key Differentiators, and app category.
 
-Write the extracted profile to `APP_BRIEF.md` at `--code-path` before proceeding. Fill `Last updated` with today's date. Leave `Recent Changes` as an empty template — it is maintained by the user, not extracted from code.
-
-```markdown
-# App Brief
-
-> Last updated: {today's date}
-
-## Core Features
-<!-- What the app does, from the user's perspective -->
-
-## Target Users
-<!-- Who uses it and what problem it solves for them -->
-
-## Key Differentiators
-<!-- What makes it unique vs alternatives -->
-
-## Recent Changes
-<!-- Update before each release. Describe what changed from the user's perspective. -->
-<!-- Example: Added dark mode / Improved sync speed / Fixed login issue on iOS 18 -->
-```
+Write the extracted profile to `APP_BRIEF.md` at `--code-path` before proceeding, using the same format as `/aso-optimize` (sections: Core Features, Target Users, Key Differentiators, Recent Changes). Fill `Last updated` with today's date. Leave `Recent Changes` as an empty template — it is maintained by the user, not extracted from code.
 
 Inform the user: `` `APP_BRIEF.md` created at `<path>`. Future runs of `/aso-research` and `/aso-optimize` will use this file instead of scanning source code. ``
 
@@ -100,7 +81,7 @@ Ask the user:
 
 > Please describe your app: What does it do? Who is it for? What makes it different from alternatives? Which App Store category does it belong to?
 
-Use the response to build the profile, then write it to `APP_BRIEF.md` in the current directory using the same template as Priority 2. Inform the user where the file was saved.
+Use the response to build the profile, then write it to `APP_BRIEF.md` in the current directory using the same format as Priority 2. Inform the user where the file was saved.
 
 **Output a Product Profile before proceeding:**
 - App category
