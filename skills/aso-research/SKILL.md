@@ -14,7 +14,7 @@ Produce an evidence-backed, locale-specific ASO research report.
 - Read `aso/APP_BRIEF.md`; create it from source code only when missing or when the user requests a refresh.
 - Write `aso/ASO_RESEARCH_<locale>.md` and optional screenshots under `aso/screenshots/<app-name>/`.
 
-Read [the shared system specification](../../references/aso-system-specification.md) before creating or updating project state. Read [the research method](references/research-method.md) before online competitor collection.
+Read [the shared system specification](references/aso-system-specification.md) before creating or updating project state. Read [the research method](references/research-method.md) before online competitor collection.
 
 ## Workflow
 

@@ -14,7 +14,7 @@ Bridge product research and quantitative keyword tooling.
 - Require `aso/APP_BRIEF.md`.
 - Read `aso/ASO_RESEARCH_<locale>.md` when available; warn and continue without it when absent.
 
-Read [the shared system specification](../../references/aso-system-specification.md) for naming and intent definitions, then read [the candidate method](references/candidate-method.md).
+Read [the shared system specification](references/aso-system-specification.md) for naming and intent definitions, then read [the candidate method](references/candidate-method.md).
 
 ## Workflow
 

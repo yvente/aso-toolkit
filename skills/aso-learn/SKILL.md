@@ -14,13 +14,13 @@ Turn one released ASO experiment into bounded, cumulative evidence.
 - App root defaults to the current working directory.
 - Evaluation window may be explicit; otherwise recommend a window from version changes and data stability.
 
-Read [the shared system specification](../../references/aso-system-specification.md), then [the learning method](references/learning-method.md).
+Read [the shared system specification](references/aso-system-specification.md), then [the learning method](references/learning-method.md).
 
-Resolve the bundled helper at `../../scripts/aso_toolkit.py` relative to this `SKILL.md`. Validate inputs first:
+Resolve the bundled helper at `scripts/aso_toolkit.py` relative to this `SKILL.md`. Validate inputs first:
 
 ```bash
-python3 <plugin-root>/scripts/aso_toolkit.py validate-project --root <app-root> --locale <locale>
-python3 <plugin-root>/scripts/aso_toolkit.py compare-metrics --before <before.csv> --after <after.csv>
+python3 <skill-root>/scripts/aso_toolkit.py validate-project --root <app-root> --locale <locale>
+python3 <skill-root>/scripts/aso_toolkit.py compare-metrics --before <before.csv> --after <after.csv>
 ```
 
 ## Workflow

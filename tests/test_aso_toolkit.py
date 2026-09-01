@@ -79,5 +79,64 @@ class StateTests(unittest.TestCase):
             self.assertEqual(profile["keyword_type_stats"]["feature"]["count"], 1)
 
 
+class PackagingTests(unittest.TestCase):
+    def test_repo_scoped_skills_are_self_contained(self):
+        root = Path(__file__).parents[1]
+        skill_root = root / "skills"
+        names = [
+            "aso-project-init",
+            "aso-research",
+            "aso-keywords",
+            "aso-optimize",
+            "aso-learn",
+        ]
+        for name in names:
+            directory = skill_root / name
+            self.assertTrue((directory / "SKILL.md").is_file(), name)
+            discovery_path = root / ".agents" / "skills" / name
+            self.assertTrue(discovery_path.is_symlink(), name)
+            self.assertEqual(discovery_path.resolve(), directory.resolve(), name)
+
+        canonical_reference = (
+            root / "references" / "aso-system-specification.md"
+        ).read_bytes()
+        for name in names:
+            bundled_reference = (
+                skill_root
+                / name
+                / "references"
+                / "aso-system-specification.md"
+            )
+            self.assertEqual(bundled_reference.read_bytes(), canonical_reference, name)
+
+        canonical_helper = (root / "scripts" / "aso_toolkit.py").read_bytes()
+        for name in ["aso-project-init", "aso-optimize", "aso-learn"]:
+            bundled_helper = skill_root / name / "scripts" / "aso_toolkit.py"
+            self.assertEqual(bundled_helper.read_bytes(), canonical_helper, name)
+
+    def test_marketplace_points_to_repository_plugin(self):
+        root = Path(__file__).parents[1]
+        marketplace = json.loads(
+            (root / ".agents" / "plugins" / "marketplace.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(marketplace["name"], "aso-toolkit")
+        entry = marketplace["plugins"][0]
+        self.assertEqual(entry["name"], "aso-toolkit")
+        self.assertEqual(entry["source"]["source"], "url")
+        self.assertEqual(
+            entry["source"]["url"],
+            "https://github.com/yvente/aso-toolkit.git",
+        )
+
+    def test_plugin_loads_canonical_skills(self):
+        root = Path(__file__).parents[1]
+        manifest = json.loads(
+            (root / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(manifest["skills"], "./skills/")
+
+
 if __name__ == "__main__":
     unittest.main()

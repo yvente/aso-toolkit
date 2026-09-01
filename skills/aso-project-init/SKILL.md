@@ -13,12 +13,12 @@ Initialize ASO state without changing app source code or publishing metadata.
 - Locale: default to `en-US`.
 - App name: infer it from the Xcode project or product configuration when reliable; otherwise ask.
 
-Before writing, read [the shared system specification](../../references/aso-system-specification.md), especially “Project layout” and “State ownership.”
+Before writing, read [the shared system specification](references/aso-system-specification.md), especially “Project layout” and “State ownership.”
 
-Resolve the bundled helper at `../../scripts/aso_toolkit.py` relative to this `SKILL.md`, then run:
+Resolve the bundled helper at `scripts/aso_toolkit.py` relative to this `SKILL.md`, then run:
 
 ```bash
-python3 <plugin-root>/scripts/aso_toolkit.py init-project --root <app-root> --app-name <app-name> --locale <locale>
+python3 <skill-root>/scripts/aso_toolkit.py init-project --root <app-root> --app-name <app-name> --locale <locale>
 ```
 
 ## Create

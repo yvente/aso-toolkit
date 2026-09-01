@@ -14,12 +14,12 @@ Generate copy-ready metadata and record a reviewable experiment without publishi
 - Read `aso/APP_BRIEF.md` and the latest matching locale entry in `experiment_log.json`.
 - Optional inputs: own keyword CSV, one or more competitor keyword CSVs, and `app-profile.json`.
 
-Read [the shared system specification](../../references/aso-system-specification.md) before touching state. Read [the optimization method](references/optimization-method.md) for selection, copy, and risk rules.
+Read [the shared system specification](references/aso-system-specification.md) before touching state. Read [the optimization method](references/optimization-method.md) for selection, copy, and risk rules.
 
-Resolve the bundled helper at `../../scripts/aso_toolkit.py` relative to this `SKILL.md`. Run it before analysis:
+Resolve the bundled helper at `scripts/aso_toolkit.py` relative to this `SKILL.md`. Run it before analysis:
 
 ```bash
-python3 <plugin-root>/scripts/aso_toolkit.py validate-project --root <app-root> --locale <locale>
+python3 <skill-root>/scripts/aso_toolkit.py validate-project --root <app-root> --locale <locale>
 ```
 
 If the experiment log does not exist, obtain a user-confirmed baseline instead of inventing current metadata. Legacy metadata CSV may be converted explicitly, but is not a silent substitute.

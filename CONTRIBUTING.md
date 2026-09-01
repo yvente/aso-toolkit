@@ -27,16 +27,17 @@ Open a GitHub issue with:
 
 ### Improving Skills
 
-The `skills/` directory contains standard Codex skill packages. To improve an existing skill or add a new one:
+The `skills/` directory contains the canonical, self-contained Codex skill packages. `.agents/skills/` contains repository-discovery links to those packages. To improve an existing skill or add a new one:
 
 - Keep each `SKILL.md` focused and give it a discriminating description
 - Put conditional detail in `references/` and deterministic behavior in tested scripts
-- Preserve the schemas and state ownership in `references/aso-system-specification.md`
+- Keep every skill self-contained for `$skill-installer`
+- Preserve the canonical schemas and state ownership in `references/aso-system-specification.md`, then synchronize the skill-local copies
 - Run the unit, skill, and plugin validators described in `README.md`
 
 ### Plugin and integrations
 
-The plugin manifest lives at `.codex-plugin/plugin.json`. Provider-specific APIs or MCP integrations should remain optional so the five skills continue to work with user-supplied exports.
+The plugin manifest lives at `.codex-plugin/plugin.json`, and the repository marketplace lives at `.agents/plugins/marketplace.json`. Provider-specific APIs or MCP integrations should remain optional so the five skills continue to work with user-supplied exports.
 
 ## Code Style
 

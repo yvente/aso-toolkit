@@ -14,7 +14,7 @@ It can consume keyword exports from ASOMinds, Astro, or similar tools. Those ser
 | `$aso-optimize` | Propose validated metadata and record an experiment | `aso/ASO_OPTIMIZE_<locale>.md`, `experiment_log.json` |
 | `$aso-learn` | Compare before/after metrics and update evidence | `aso/ASO_LEARN_<locale>.md`, `app-profile.json` |
 
-The shared contract for paths, schemas, state ownership, locales, and metadata is in [`references/aso-system-specification.md`](references/aso-system-specification.md).
+The canonical contract for paths, schemas, state ownership, locales, and metadata is in [`references/aso-system-specification.md`](references/aso-system-specification.md). Each installable skill carries the reference material and helper scripts it needs, so standalone installation does not depend on files outside the skill directory.
 
 ## Workflow
 
@@ -34,20 +34,59 @@ $aso-research → $aso-keywords
 
 The toolkit never publishes to App Store Connect by itself. It creates proposals and experiment state for human review.
 
-## Local development
+## Install
 
-Codex discovers personal standalone skills under `$HOME/.agents/skills`. For a development checkout, symlink each skill folder you want to test:
+### Install the complete plugin (recommended)
+
+Add this GitHub repository as a Codex marketplace, then install the plugin:
 
 ```bash
-mkdir -p "$HOME/.agents/skills"
-ln -s "$PWD/skills/aso-project-init" "$HOME/.agents/skills/aso-project-init"
-ln -s "$PWD/skills/aso-research" "$HOME/.agents/skills/aso-research"
-ln -s "$PWD/skills/aso-keywords" "$HOME/.agents/skills/aso-keywords"
-ln -s "$PWD/skills/aso-optimize" "$HOME/.agents/skills/aso-optimize"
-ln -s "$PWD/skills/aso-learn" "$HOME/.agents/skills/aso-learn"
+codex plugin marketplace add yvente/aso-toolkit
+codex plugin add aso-toolkit@aso-toolkit
 ```
 
-Start a new Codex task after installation. The repository also contains a valid [Codex plugin manifest](.codex-plugin/plugin.json) for packaging all five skills together.
+Start a new Codex task after installation. The plugin bundles all five skills and keeps them on the same version.
+
+### Install standalone skills
+
+In Codex, invoke `$skill-installer` and ask it to install the desired paths from `yvente/aso-toolkit`:
+
+```text
+$skill-installer Install these skills from yvente/aso-toolkit:
+skills/aso-project-init
+skills/aso-research
+skills/aso-keywords
+skills/aso-optimize
+skills/aso-learn
+```
+
+Every directory is self-contained, so installing one skill does not require cloning the complete repository.
+
+### Use directly from a checkout
+
+Codex automatically discovers repository-scoped skills under `.agents/skills`. Clone the repository, open Codex anywhere inside the checkout, and start a new task:
+
+```bash
+git clone https://github.com/yvente/aso-toolkit.git
+cd aso-toolkit
+codex
+```
+
+No user-level symlinks are required.
+
+## Use
+
+Invoke a skill explicitly by typing `$` in Codex, or describe a matching ASO task and let Codex select it automatically:
+
+```text
+$aso-project-init Initialize ASO for this iOS app in en-US.
+$aso-research Research benchmark competitors for this app in en-US.
+$aso-keywords Generate a localized keyword measurement backlog.
+$aso-optimize Propose and validate the next metadata experiment.
+$aso-learn Evaluate round 1 from the supplied before/after CSV files.
+```
+
+Run the workflow in the target app repository. Generated ASO state belongs to that app, not to this toolkit checkout.
 
 ## Deterministic helper
 
@@ -83,7 +122,8 @@ git diff --check
 - [x] Deterministic validation and experiment helpers
 - [x] Plugin manifest
 - [ ] Real-project behavioral evaluations
-- [ ] Marketplace packaging and publication
+- [x] GitHub marketplace packaging
+- [ ] Universal Plugins Directory publication
 - [ ] Optional ASO data-provider connector/MCP integration
 
 ## License
