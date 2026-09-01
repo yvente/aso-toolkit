@@ -34,7 +34,7 @@ Reference competitors set the conversion/visual bar and must not duplicate bench
 
 Use the first three phone screenshots for the requested storefront. For each, capture headline, visual composition, benefit, device framing, palette, and tone. Then identify cross-app conventions and propose a message sequence: outcome, differentiating mechanism, proof/depth.
 
-Do not download screenshots unless analysis requires local visual inspection. When downloaded, sanitize app names for paths and keep assets under `aso/screenshots/`.
+Do not download screenshots unless analysis requires local visual inspection. When downloaded, sanitize filenames and keep assets under the active `aso/versions/<target-version>/<locale>/screenshots/` directory.
 
 ## Review analysis
 

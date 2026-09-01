@@ -1,50 +1,33 @@
 ---
 name: aso-project-init
-description: Initialize the standard files and directories for a reusable App Store Optimization experiment workflow. Use for first-time ASO setup in an iOS app repository; do not use merely to research competitors or rewrite metadata.
+description: Initialize and prepare the version-first ASO workspace for an iOS app. Use for first-time setup or to create a target-version/locale work directory; do not use to generate empty lifecycle artifacts.
 ---
 
 # ASO Project Init
 
-Initialize ASO state without changing app source code or publishing metadata.
+Initialize ASO state without changing app source code, migrating legacy files, or publishing metadata.
 
 ## Inputs
 
 - App root: use the user-provided path, otherwise the current working directory.
-- Locale: default to `en-US`.
-- App name: infer it from the Xcode project or product configuration when reliable; otherwise ask.
+- App name: infer it from first-party project configuration when reliable; otherwise ask.
+- Locale: default to `en-US` for initialization.
+- Target version and locale: require both when preparing a work directory.
 
-Before writing, read [the shared system specification](references/aso-system-specification.md), especially “Project layout” and “State ownership.”
+Read [the shared system specification](references/aso-system-specification.md), especially project layout, artifact ownership, and legacy migration.
 
-Resolve the bundled helper at `scripts/aso_toolkit.py` relative to this `SKILL.md`, then run:
+Resolve `scripts/aso_toolkit.py` relative to this `SKILL.md`. Initialize with:
 
 ```bash
 python3 <skill-root>/scripts/aso_toolkit.py init-project --root <app-root> --app-name <app-name> --locale <locale>
 ```
 
-## Create
+When a target version is requested, then run:
 
-The helper creates the following when absent:
-
-```text
-aso/
-├── README.md
-├── STRUCTURE.md
-├── APP_BRIEF.md
-└── metadata/
-app-profile.json
+```bash
+python3 <skill-root>/scripts/aso_toolkit.py prepare-version --root <app-root> --target-version <version> --locale <locale>
 ```
 
-- `APP_BRIEF.md` contains `Core Features`, `Target Users`, `Key Differentiators`, and `Recent Changes`.
-- `app-profile.json` starts with empty history, default thresholds (`min_popularity: 20`, `max_difficulty: 70`), and all four keyword intent types.
-- `aso/README.md` describes the sequence `$aso-research` → `$aso-keywords` → `$aso-optimize` → `$aso-learn`.
-- `aso/STRUCTURE.md` documents which files are user-maintained and which are generated.
+Initialization creates only `aso/README.md`, `aso/STRUCTURE.md`, `aso/APP_BRIEF.md`, `aso/versions/`, and root `app-profile.json` when absent. Preparation creates only `aso/versions/<target-version>/<locale>/`. Do not create empty research, keywords, optimize, metadata, workbook, screenshots, learn, or experiment-log artifacts.
 
-Do not create an empty `experiment_log.json`. `$aso-optimize` creates it only when baseline metadata is available.
-
-## Safety
-
-- Preserve existing files. If a target exists, inspect it and only add missing compatible structure.
-- Ask before replacing a conflicting schema or template.
-- Never modify application source, App Store Connect, or external services.
-
-Finish with the created and preserved paths plus the next recommended command.
+Both operations must be idempotent and preserve existing valid content. Report any detected 0.2.x paths with the manual migration guidance; never move or delete them automatically. Finish with created, preserved, and warned paths.

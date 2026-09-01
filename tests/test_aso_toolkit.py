@@ -26,6 +26,24 @@ def metadata(**overrides):
     return value
 
 
+def metadata_document(role, version, locale="en-US", **overrides):
+    value = {
+        "schema_version": 1,
+        "role": role,
+        "locale": locale,
+        "metadata": metadata(**overrides),
+    }
+    if role == "live":
+        value["version"] = version
+        value["captured_at"] = "2026-01-01"
+        value["source"] = "https://apps.apple.com/app/id123"
+    else:
+        value["target_version"] = version
+        value["baseline_version"] = "1.0.0"
+        value["generated_at"] = "2026-01-02"
+    return value
+
+
 class MetadataTests(unittest.TestCase):
     def test_valid_metadata_counts_rendered_keywords(self):
         counts = aso.validate_metadata(metadata())
@@ -41,6 +59,105 @@ class MetadataTests(unittest.TestCase):
         changes = aso.metadata_changes(before, after)
         self.assertEqual(changes["keywords"]["added"], ["planner"])
         self.assertEqual(changes["keywords"]["removed"], ["timer"])
+
+    def test_role_aware_live_and_proposed_metadata(self):
+        live = metadata_document("live", "1.0.0")
+        proposed = metadata_document("proposed", "1.1.0")
+        self.assertEqual(
+            aso.validate_metadata_document(live, expected_role="live", filename="live-1.0.0.json")["role"],
+            "live",
+        )
+        self.assertEqual(
+            aso.validate_metadata_document(
+                proposed,
+                expected_role="proposed",
+                expected_version="1.1.0",
+                filename="proposed-1.1.0.json",
+            )["role"],
+            "proposed",
+        )
+
+    def test_live_and_proposed_roles_cannot_be_confused(self):
+        with self.assertRaises(aso.ValidationError):
+            aso.validate_metadata_document(metadata_document("proposed", "1.1.0"), expected_role="live")
+        with self.assertRaises(aso.ValidationError):
+            aso.validate_metadata_document(metadata_document("live", "1.0.0"), expected_role="proposed")
+
+
+class LayoutTests(unittest.TestCase):
+    def init_args(self, root, locale="en-US"):
+        return Namespace(root=str(root), app_name="Focus Timer", locale=locale)
+
+    def prepare_args(self, root, version="1.1.0", locale="en-US"):
+        return Namespace(root=str(root), target_version=version, locale=locale)
+
+    def test_init_is_minimal_idempotent_and_preserves_files(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            first = aso.init_project(self.init_args(root))
+            brief = root / "aso" / "APP_BRIEF.md"
+            brief.write_text("# My Existing Brief\n", encoding="utf-8")
+            second = aso.init_project(self.init_args(root))
+            self.assertTrue(first["created"])
+            self.assertFalse(second["created"])
+            self.assertEqual(brief.read_text(encoding="utf-8"), "# My Existing Brief\n")
+            self.assertTrue((root / "aso" / "versions").is_dir())
+            files = {path.name for path in (root / "aso").rglob("*") if path.is_file()}
+            self.assertEqual(files, {"README.md", "STRUCTURE.md", "APP_BRIEF.md"})
+            self.assertFalse((root / "experiment_log.json").exists())
+
+    def test_prepare_version_locales_and_idempotency(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            aso.init_project(self.init_args(root))
+            for locale in ("en-US", "ja", "zh-Hant"):
+                first = aso.prepare_version(self.prepare_args(root, locale=locale))
+                second = aso.prepare_version(self.prepare_args(root, locale=locale))
+                self.assertTrue(Path(first["path"]).is_dir())
+                self.assertTrue(first["created"])
+                self.assertFalse(second["created"])
+                self.assertTrue(second["preserved"])
+
+    def test_rejects_path_traversal_and_unsafe_segments(self):
+        bad_versions = ("../1.1.0", "1/1", r"1\\1", "1..1", ".hidden", "1 1")
+        bad_locales = ("../en-US", "en/US", r"en\\US", "zh..Hant", "en_US")
+        for value in bad_versions:
+            with self.subTest(version=value), self.assertRaises(aso.ValidationError):
+                aso.validate_version(value)
+        for value in bad_locales:
+            with self.subTest(locale=value), self.assertRaises(aso.ValidationError):
+                aso.validate_locale(value)
+        self.assertEqual(aso.validate_version("2026.09-beta+1"), "2026.09-beta+1")
+
+    def test_validate_new_layout_and_metadata_documents(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            aso.init_project(self.init_args(root))
+            work = Path(aso.prepare_version(self.prepare_args(root))["path"])
+            (work / "live-1.0.0.json").write_text(
+                json.dumps(metadata_document("live", "1.0.0")), encoding="utf-8"
+            )
+            (work / "proposed-1.1.0.json").write_text(
+                json.dumps(metadata_document("proposed", "1.1.0")), encoding="utf-8"
+            )
+            result = aso.validate_project(
+                Namespace(root=str(root), target_version="1.1.0", locale="en-US")
+            )
+            self.assertTrue(result["valid"])
+            self.assertEqual(len(result["metadata_documents"]), 2)
+
+    def test_legacy_layout_is_reported_and_never_modified(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            aso_dir = root / "aso"
+            aso_dir.mkdir()
+            legacy = aso_dir / "ASO_RESEARCH_en-US.md"
+            legacy.write_text("legacy research\n", encoding="utf-8")
+            before = legacy.read_bytes()
+            result = aso.init_project(self.init_args(root))
+            self.assertIn(str(legacy.resolve()), result["legacy_paths"])
+            self.assertIn("Manually move", result["warnings"][0])
+            self.assertEqual(legacy.read_bytes(), before)
 
 
 class StateTests(unittest.TestCase):
@@ -136,6 +253,7 @@ class PackagingTests(unittest.TestCase):
             (root / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")
         )
         self.assertEqual(manifest["skills"], "./skills/")
+        self.assertEqual(manifest["version"], "0.3.0")
 
 
 if __name__ == "__main__":

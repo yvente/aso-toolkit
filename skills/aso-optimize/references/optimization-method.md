@@ -4,7 +4,7 @@ Use this reference when preparing a concrete metadata experiment.
 
 ## Baseline
 
-Select the latest entry for the target locale, not the latest global entry. Confirm whether its `metadata_after` actually went live. If not, use the last confirmed live snapshot or ask for a current baseline.
+Use `live-<baseline-version>.json` in the active target-version/locale directory only after verifying its source and capture date. Experiment-log history can help locate context but is not proof that `metadata_after` went live. If live state is not confirmed, ask for or collect the current baseline.
 
 ## Keyword data
 
@@ -53,3 +53,5 @@ Include:
 - validation results;
 - risk and attribution analysis;
 - experiment hypothesis and follow-up plan.
+
+Write the report as `optimize.md`. Write the pending metadata first to `proposed-<target-version>.json`, validate it, and derive that locale's `deliverable.xlsx` from the JSON. Verify every workbook value against the JSON before delivery; the workbook never becomes an independent metadata source.

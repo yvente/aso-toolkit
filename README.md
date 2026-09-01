@@ -1,6 +1,6 @@
 # ASO Toolkit
 
-ASO Toolkit is a Codex plugin containing five focused skills for repeatable App Store Optimization work: product research, keyword discovery, metadata experiments, and post-release learning.
+ASO Toolkit is an agent plugin for Codex and ZCode containing five focused skills for repeatable App Store Optimization work: product research, keyword discovery, metadata experiments, and post-release learning.
 
 It can consume keyword exports from ASOMinds, Astro, or similar tools. Those services provide measurement data; ASO Toolkit turns the data and the app's actual product context into a reviewable optimization loop.
 
@@ -8,11 +8,11 @@ It can consume keyword exports from ASOMinds, Astro, or similar tools. Those ser
 
 | Skill | Purpose | Primary output |
 |---|---|---|
-| `$aso-project-init` | Initialize a standard ASO workspace | `aso/`, `app-profile.json` |
-| `$aso-research` | Build the product profile and research competitors | `aso/ASO_RESEARCH_<locale>.md` |
-| `$aso-keywords` | Generate a 40–60 term measurement backlog | `aso/ASO_KEYWORDS_<locale>.md` |
-| `$aso-optimize` | Propose validated metadata and record an experiment | `aso/ASO_OPTIMIZE_<locale>.md`, `experiment_log.json` |
-| `$aso-learn` | Compare before/after metrics and update evidence | `aso/ASO_LEARN_<locale>.md`, `app-profile.json` |
+| `$aso-project-init` | Initialize and prepare a version/locale workspace | `aso/`, `app-profile.json` |
+| `$aso-research` | Research competitors for one version and locale | `aso/versions/<version>/<locale>/research.md` |
+| `$aso-keywords` | Generate a localized measurement backlog | `aso/versions/<version>/<locale>/keywords.md` |
+| `$aso-optimize` | Propose validated metadata and derive a workbook | `proposed-<version>.json`, `deliverable.xlsx` |
+| `$aso-learn` | Evaluate a released version from observed data | `learn.md`, `app-profile.json` |
 
 The canonical contract for paths, schemas, state ownership, locales, and metadata is in [`references/aso-system-specification.md`](references/aso-system-specification.md). Each installable skill carries the reference material and helper scripts it needs, so standalone installation does not depend on files outside the skill directory.
 
@@ -34,6 +34,14 @@ $aso-research → $aso-keywords
 
 The toolkit never publishes to App Store Connect by itself. It creates proposals and experiment state for human review.
 
+Each step hands its output to the next:
+
+- `$aso-project-init` creates the one shared `aso/APP_BRIEF.md`, `aso/versions/`, and `app-profile.json`, then prepares `aso/versions/<target-version>/<locale>/` on request.
+- `$aso-research` writes competitor, review, screenshot, and positioning evidence to that version/locale directory.
+- `$aso-keywords` consumes same-locale evidence and produces a measurement backlog there.
+- `$aso-optimize` separates verified `live-<baseline-version>.json` from `proposed-<target-version>.json`, derives one locale-specific `deliverable.xlsx`, and records a proposed experiment.
+- `$aso-learn` runs only after release and real observations, writes `learn.md`, and updates root learning state.
+
 ## Install
 
 ### Install the complete plugin (recommended)
@@ -46,6 +54,10 @@ codex plugin add aso-toolkit@aso-toolkit
 ```
 
 Start a new Codex task after installation. The plugin bundles all five skills and keeps them on the same version.
+
+### Install with ZCode
+
+In ZCode, open Settings → Plugin Management → Discover, press **+**, and add `yvente/aso-toolkit`. ZCode locates the marketplace through `.claude-plugin/marketplace.json` and resolves the plugin through the `.codex-plugin/plugin.json` manifest, so Codex and ZCode install from the same repository without extra configuration.
 
 ### Install standalone skills
 
@@ -64,7 +76,7 @@ Every directory is self-contained, so installing one skill does not require clon
 
 ### Use directly from a checkout
 
-Codex automatically discovers repository-scoped skills under `.agents/skills`. Clone the repository, open Codex anywhere inside the checkout, and start a new task:
+Codex and ZCode automatically discover repository-scoped skills under `.agents/skills`. Clone the repository, open the agent anywhere inside the checkout, and start a new task:
 
 ```bash
 git clone https://github.com/yvente/aso-toolkit.git
@@ -88,6 +100,14 @@ $aso-learn Evaluate round 1 from the supplied before/after CSV files.
 
 Run the workflow in the target app repository. Generated ASO state belongs to that app, not to this toolkit checkout.
 
+## First run (en-US example)
+
+1. `$aso-project-init Initialize ASO for this iOS app and prepare version 1.1.0 in en-US.` — then fill in `aso/APP_BRIEF.md`.
+2. `$aso-research Research benchmark competitors for version 1.1.0 in en-US.` — review `aso/versions/1.1.0/en-US/research.md`.
+3. `$aso-keywords Generate the en-US keyword measurement backlog for version 1.1.0.` — review `keywords.md` in the same directory.
+4. `$aso-optimize Propose and validate en-US metadata for version 1.1.0 from the verified 1.0.0 live baseline.` — review the proposed JSON and its derived `deliverable.xlsx`, then release through App Store Connect yourself.
+5. After release and a real observation window, collect before/after metrics and run `$aso-learn Evaluate released version 1.1.0 in en-US.` The result lands beside the version artifacts and updates root learning state.
+
 ## Deterministic helper
 
 [`scripts/aso_toolkit.py`](scripts/aso_toolkit.py) handles operations that should not depend on free-form model output:
@@ -95,12 +115,38 @@ Run the workflow in the target app repository. Generated ASO state belongs to th
 ```bash
 python3 scripts/aso_toolkit.py --help
 python3 scripts/aso_toolkit.py init-project --root /path/to/app --app-name "My App"
-python3 scripts/aso_toolkit.py validate-project --root /path/to/app --locale en-US
-python3 scripts/aso_toolkit.py validate-metadata --file proposed-metadata.json
+python3 scripts/aso_toolkit.py prepare-version --root /path/to/app --target-version 1.1.0 --locale en-US
+python3 scripts/aso_toolkit.py validate-project --root /path/to/app --target-version 1.1.0 --locale en-US
+python3 scripts/aso_toolkit.py validate-metadata --file proposed-1.1.0.json --role proposed --version 1.1.0 --locale en-US
 python3 scripts/aso_toolkit.py compare-metrics --before before.csv --after after.csv
 ```
 
 It validates metadata limits and JSON state, appends locale-specific experiment rounds atomically, compares metrics, and recomputes learning statistics idempotently.
+
+## 0.3.0 workspace
+
+ASO Toolkit 0.3.0 is version-first and locale-second:
+
+```text
+aso/
+├── README.md
+├── STRUCTURE.md
+├── APP_BRIEF.md
+└── versions/<target-version>/<locale>/
+    ├── research.md
+    ├── keywords.md
+    ├── optimize.md
+    ├── live-<baseline-version>.json
+    ├── proposed-<target-version>.json
+    ├── keyword-measurements-<date>.csv
+    ├── deliverable.xlsx
+    ├── screenshots/
+    └── learn.md
+```
+
+Only `README.md`, `STRUCTURE.md`, `APP_BRIEF.md`, `versions/`, and root `app-profile.json` are initialized. Lifecycle artifacts appear only when produced. Root `experiment_log.json` and `app-profile.json` remain compatible state locations.
+
+The helper detects 0.2.x root-level reports and `aso/metadata/` but never migrates them. Follow the manual role-aware migration in the canonical specification; back up first, classify each artifact by target version and locale, distinguish verified live metadata from proposals, regenerate each workbook from its proposed JSON, validate, and only then remove old copies yourself.
 
 ## Validate the repository
 

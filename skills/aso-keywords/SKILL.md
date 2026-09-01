@@ -1,39 +1,27 @@
 ---
 name: aso-keywords
-description: Generate a structured, localized App Store keyword candidate set from an existing app brief and optional competitor research. Use before obtaining volume/rank data; do not use to claim keyword popularity or to produce final App Store metadata.
+description: Generate a structured App Store keyword candidate set for one target version and locale, using same-locale research and optional measured data. Use before final metadata optimization; do not claim unmeasured popularity or mix locale conclusions.
 ---
 
 # ASO Keywords
 
-Bridge product research and quantitative keyword tooling.
+Bridge product research and quantitative keyword tooling within one target-version/locale directory.
 
 ## Inputs
 
-- App root defaults to the current working directory.
-- Locale defaults to `en-US`.
-- Require `aso/APP_BRIEF.md`.
-- Read `aso/ASO_RESEARCH_<locale>.md` when available; warn and continue without it when absent.
+- Require app root, target version, locale, and shared `aso/APP_BRIEF.md`.
+- Read `aso/versions/<target-version>/<locale>/research.md` when available; warn and continue from the brief when absent.
+- Use only measurement files applicable to the same locale. Record provider, collection date, and column meaning.
 
-Read [the shared system specification](references/aso-system-specification.md) for naming and intent definitions, then read [the candidate method](references/candidate-method.md).
+Read [the shared system specification](references/aso-system-specification.md), then [the candidate method](references/candidate-method.md).
 
-## Workflow
+Generate 40–60 unique candidates across `broad`, `feature`, `problem_intent`, and `long_tail`; assign evidence-backed P0/P1/P2 priority; keep terms in the target storefront language; and preserve phrases useful for rank lookup. Never invent features, search volume, difficulty, rank, or traffic.
 
-1. Extract only confirmed category, feature, audience, problem, differentiation, and competitor signals.
-2. Generate 40–60 unique candidates across `broad`, `feature`, `problem_intent`, and `long_tail`.
-3. Assign P0/P1/P2 priority. P0 requires a concrete reason such as direct core-feature relevance, strong competitor signal, missing current coverage, or a defensible product moat.
-4. Keep keywords in the target storefront language. Write explanatory prose in the user's language unless requested otherwise.
-5. Deduplicate normalized candidates, but preserve meaningful phrases for third-party rank lookup.
+Write:
 
-Do not invent features, popularity, difficulty, rank, or traffic estimates. This step creates a measurement backlog, not final metadata.
+```text
+aso/versions/<target-version>/<locale>/keywords.md
+aso/versions/<target-version>/<locale>/keyword-measurements-<YYYY-MM-DD>.csv
+```
 
-## Output
-
-Write `aso/ASO_KEYWORDS_<locale>.md` with:
-
-- input provenance and generation date;
-- intent definitions;
-- candidate tables grouped by intent and priority;
-- a recommended lookup order for Astro or another keyword tool;
-- instructions to export measured CSV data for `$aso-optimize`.
-
-Report the exact path and candidate count.
+Always create `keywords.md`. Create the dated CSV only when real measurements were obtained or a genuine measurement dataset was formed; do not create an empty placeholder. Keep conclusions locale-specific and never copy unverified metrics across locales. Report exact paths, candidate count, and measurement provenance.

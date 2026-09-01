@@ -2,6 +2,8 @@
 
 Use this reference for metrics comparison, attribution, and profile updates.
 
+Do not begin formal evaluation until the target version/locale is confirmed released and real observed data exists. Otherwise stop without creating `learn.md` or updating cumulative state.
+
 ## Comparable inputs
 
 Before/after CSVs must use the same metric definitions, storefront scope, acquisition filters, and sufficiently comparable durations. Normalize metric aliases conservatively and stop when units are ambiguous.
