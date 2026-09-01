@@ -1,0 +1,4 @@
+interface:
+  display_name: "ASO Learn"
+  short_description: "Evaluate ASO experiments and update learnings."
+  default_prompt: "Use $aso-learn to evaluate this ASO experiment."

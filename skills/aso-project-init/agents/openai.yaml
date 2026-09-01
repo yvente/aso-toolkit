@@ -1,0 +1,4 @@
+interface:
+  display_name: "ASO Project Init"
+  short_description: "Initialize a reusable ASO experiment workspace."
+  default_prompt: "Use $aso-project-init to initialize ASO files for this app."

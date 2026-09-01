@@ -1,124 +1,91 @@
-# aso-toolkit
+# ASO Toolkit
 
-Claude Code skills and MCP server for App Store Optimization workflows.
+ASO Toolkit is a Codex plugin containing five focused skills for repeatable App Store Optimization work: product research, keyword discovery, metadata experiments, and post-release learning.
 
-Pairs with [ASOMinds](https://asominds.com/) for data-driven ASO automation.
-
-## Structure
-
-```
-aso-toolkit/
-├── skills/
-│   ├── aso-optimize.md   # Claude Code slash command
-│   └── aso-research.md   # Claude Code slash command
-└── mcp/                  # MCP server (coming soon)
-```
+It can consume keyword exports from ASOMinds, Astro, or similar tools. Those services provide measurement data; ASO Toolkit turns the data and the app's actual product context into a reviewable optimization loop.
 
 ## Skills
 
-### `/aso-research`
-
-Discovers and segments competitors, analyzes their App Store presence, and produces an ASO growth strategy report — including screenshot visual analysis and immediate metadata recommendations.
-
-Run this before `/aso-optimize` to identify the right competitors and build your initial keyword pack.
-
-**Install:**
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/yvente/aso-toolkit/main/skills/aso-research.md \
-  -o ~/.claude/commands/aso-research.md
-```
-
-**Usage:**
-
-```bash
-# From a directory with APP_BRIEF.md or source code
-/aso-research --code-path ./MyApp
-
-# Target a specific locale
-/aso-research --code-path ./MyApp --locale ja
-
-# Without code path: scans current directory (or asks if no app code found)
-/aso-research
-
-# After a major feature update: re-scan source code and regenerate APP_BRIEF.md
-/aso-research --code-path ./MyApp --refresh-brief
-```
-
-**Parameters:**
-
-| Parameter | Required | Description |
+| Skill | Purpose | Primary output |
 |---|---|---|
-| `--code-path` | — | App source code path or directory containing APP_BRIEF.md (default: current dir) |
-| `--locale` | — | Target App Store locale (default: en-US) |
-| `--refresh-brief` | — | Force re-scan source code and regenerate APP_BRIEF.md |
+| `$aso-project-init` | Initialize a standard ASO workspace | `aso/`, `app-profile.json` |
+| `$aso-research` | Build the product profile and research competitors | `aso/ASO_RESEARCH_<locale>.md` |
+| `$aso-keywords` | Generate a 40–60 term measurement backlog | `aso/ASO_KEYWORDS_<locale>.md` |
+| `$aso-optimize` | Propose validated metadata and record an experiment | `aso/ASO_OPTIMIZE_<locale>.md`, `experiment_log.json` |
+| `$aso-learn` | Compare before/after metrics and update evidence | `aso/ASO_LEARN_<locale>.md`, `app-profile.json` |
 
-**Workflow:**
-1. Builds app profile from `APP_BRIEF.md`, source code scan, or interactive description; writes `APP_BRIEF.md` if not already present (shared with `/aso-optimize`)
-2. Discovers 10–15 competitor candidates via targeted web searches and the iTunes Search API
-3. Segments into **Benchmark Competitors** (3–5, for keyword gap analysis) and **Reference Competitors** (2–3 category leaders, for visual/CRO learning)
-4. Analyzes Benchmark Competitors metadata and keyword signals; downloads and analyzes first 3 screenshots from Reference Competitors; extracts review pain points
-5. Outputs strategy report with App Name candidates, 100-char keyword pack, and first 3 screenshots strategy; saves report to `ASO_RESEARCH.md`
+The shared contract for paths, schemas, state ownership, locales, and metadata is in [`references/aso-system-specification.md`](references/aso-system-specification.md).
 
----
+## Workflow
 
-### `/aso-optimize`
-
-Produces optimized App Store metadata from your app brief, current metadata, and keyword data.
-
-**Install:**
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/yvente/aso-toolkit/main/skills/aso-optimize.md \
-  -o ~/.claude/commands/aso-optimize.md
+```text
+$aso-project-init
+        ↓
+$aso-research → $aso-keywords
+        ↓             ↓ measured keyword CSVs
+        └──────→ $aso-optimize
+                       ↓ human review and App Store release
+             collect comparable metrics
+                       ↓
+                  $aso-learn
+                       ↓
+                next experiment
 ```
 
-**Usage:**
+The toolkit never publishes to App Store Connect by itself. It creates proposals and experiment state for human review.
+
+## Local development
+
+Codex discovers personal standalone skills under `$HOME/.agents/skills`. For a development checkout, symlink each skill folder you want to test:
 
 ```bash
-# First run: scans source code and generates APP_BRIEF.md
-/aso-optimize --metadata ~/Downloads/metadata.csv --code-path ./MyApp
-
-# Subsequent runs (or if APP_BRIEF.md was already created by /aso-research): reads it directly
-/aso-optimize --metadata ~/Downloads/metadata.csv
-
-# With keyword data from a research tool (e.g. Astro)
-/aso-optimize \
-  --metadata ~/Downloads/metadata.csv \
-  --keywords ~/Desktop/my-app-keywords.csv \
-  --competitors ~/Desktop/comp1.csv ~/Desktop/comp2.csv \
-  --locale en-US
-
-# After a major feature update: re-scan source code
-/aso-optimize --metadata ~/Downloads/metadata.csv --code-path ./MyApp --refresh-brief
+mkdir -p "$HOME/.agents/skills"
+ln -s "$PWD/skills/aso-project-init" "$HOME/.agents/skills/aso-project-init"
+ln -s "$PWD/skills/aso-research" "$HOME/.agents/skills/aso-research"
+ln -s "$PWD/skills/aso-keywords" "$HOME/.agents/skills/aso-keywords"
+ln -s "$PWD/skills/aso-optimize" "$HOME/.agents/skills/aso-optimize"
+ln -s "$PWD/skills/aso-learn" "$HOME/.agents/skills/aso-learn"
 ```
 
-**Parameters:**
+Start a new Codex task after installation. The repository also contains a valid [Codex plugin manifest](.codex-plugin/plugin.json) for packaging all five skills together.
 
-| Parameter | Required | Description |
-|---|---|---|
-| `--metadata` | ✅ | Path to current ASO metadata CSV |
-| `--code-path` | — | App source code path (default: current dir) |
-| `--keywords` | — | Own app keyword CSV from a research tool e.g. Astro |
-| `--competitors` | — | Competitor keyword CSVs (supports multiple) |
-| `--locale` | — | Target locale (default: en-US) |
-| `--refresh-brief` | — | Force re-scan source code and regenerate APP_BRIEF.md |
+## Deterministic helper
 
-**Workflow:**
-1. Reads `APP_BRIEF.md` if present; otherwise scans source code and generates it
-2. Loads current metadata CSV (supports ASOMinds export and custom formats)
-3. Applies inlined Apple ASO rules + one targeted category keyword search
-4. Analyzes keyword data: preserves top-10 rankings, filters by popularity/difficulty
-5. Outputs optimized metadata with before/after comparison and keyword rationale; saves results to `ASO_OPTIMIZE.md`
+[`scripts/aso_toolkit.py`](scripts/aso_toolkit.py) handles operations that should not depend on free-form model output:
 
-## MCP Server
+```bash
+python3 scripts/aso_toolkit.py --help
+python3 scripts/aso_toolkit.py init-project --root /path/to/app --app-name "My App"
+python3 scripts/aso_toolkit.py validate-project --root /path/to/app --locale en-US
+python3 scripts/aso_toolkit.py validate-metadata --file proposed-metadata.json
+python3 scripts/aso_toolkit.py compare-metrics --before before.csv --after after.csv
+```
 
-Coming in Phase 2 — will expose the same workflow as an MCP tool, usable from any MCP-compatible client.
+It validates metadata limits and JSON state, appends locale-specific experiment rounds atomically, compares metrics, and recomputes learning statistics idempotently.
 
-## Roadmap
+## Validate the repository
 
-- [x] Claude Code Skill (`/aso-optimize`)
-- [x] Claude Code Skill (`/aso-research`)
-- [x] Install script (`curl`)
-- [ ] MCP server — support Claude Desktop, Cursor, Windsurf and other MCP-compatible clients
-- [ ] Standalone CLI — no Claude dependency required
+```bash
+python3 -m unittest discover -s tests -v
+
+for skill in skills/aso-project-init skills/aso-research skills/aso-keywords skills/aso-optimize skills/aso-learn; do
+  python3 /path/to/skill-creator/scripts/quick_validate.py "$skill"
+done
+
+python3 /path/to/plugin-creator/scripts/validate_plugin.py .
+git diff --check
+```
+
+## Status
+
+- [x] Five Codex Skills
+- [x] Shared state/schema specification
+- [x] Deterministic validation and experiment helpers
+- [x] Plugin manifest
+- [ ] Real-project behavioral evaluations
+- [ ] Marketplace packaging and publication
+- [ ] Optional ASO data-provider connector/MCP integration
+
+## License
+
+MIT

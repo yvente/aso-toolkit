@@ -1,0 +1,4 @@
+interface:
+  display_name: "ASO Optimize"
+  short_description: "Optimize localized App Store metadata safely."
+  default_prompt: "Use $aso-optimize to propose the next metadata experiment."

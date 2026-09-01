@@ -1,0 +1,4 @@
+interface:
+  display_name: "ASO Research"
+  short_description: "Research App Store competitors and positioning."
+  default_prompt: "Use $aso-research to research competitors for this app."

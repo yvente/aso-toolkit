@@ -1,0 +1,4 @@
+interface:
+  display_name: "ASO Keywords"
+  short_description: "Build localized App Store keyword candidates."
+  default_prompt: "Use $aso-keywords to create a localized keyword candidate set."

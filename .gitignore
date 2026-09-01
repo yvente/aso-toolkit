@@ -1,5 +1,7 @@
 .DS_Store
 *.csv
+__pycache__/
+*.py[cod]
 
 # Local Claude Code config
 .claude/

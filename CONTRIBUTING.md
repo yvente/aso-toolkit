@@ -4,7 +4,8 @@ Thanks for your interest in contributing!
 
 ## Prerequisites
 
-- [Claude Code](https://claude.ai/code) CLI installed
+- Codex CLI or the Codex desktop app
+- Python 3.10+
 - Basic familiarity with App Store Optimization concepts
 
 ## How to Contribute
@@ -26,15 +27,16 @@ Open a GitHub issue with:
 
 ### Improving Skills
 
-The `skills/` directory contains Claude Code slash command definitions in Markdown. To improve an existing skill or add a new one:
+The `skills/` directory contains standard Codex skill packages. To improve an existing skill or add a new one:
 
-- Keep prompts clear and step-by-step
-- Document all parameters with a table
-- Test locally by symlinking to `~/.claude/commands/`
+- Keep each `SKILL.md` focused and give it a discriminating description
+- Put conditional detail in `references/` and deterministic behavior in tested scripts
+- Preserve the schemas and state ownership in `references/aso-system-specification.md`
+- Run the unit, skill, and plugin validators described in `README.md`
 
-### MCP Server (Phase 2)
+### Plugin and integrations
 
-The `mcp/` directory is reserved for the upcoming MCP server implementation. Contributions here are especially welcome — see the roadmap in README for scope.
+The plugin manifest lives at `.codex-plugin/plugin.json`. Provider-specific APIs or MCP integrations should remain optional so the five skills continue to work with user-supplied exports.
 
 ## Code Style
 
