@@ -37,7 +37,7 @@ The `skills/` directory contains the canonical, self-contained Codex skill packa
 
 ### Plugin and integrations
 
-The plugin manifest lives at `.codex-plugin/plugin.json`, and the repository marketplace lives at `.agents/plugins/marketplace.json`. Provider-specific APIs or MCP integrations should remain optional so the five skills continue to work with user-supplied exports.
+The plugin manifest lives at `.codex-plugin/plugin.json`. The repository marketplace has two manifests: `.agents/plugins/marketplace.json` (the Codex-standard location, with a git-URL source) and `.claude-plugin/marketplace.json` (the Claude Code / ZCode-compatible location, with a relative source). Keep both in sync when adding or renaming plugins. Provider-specific APIs or MCP integrations should remain optional so the five skills continue to work with user-supplied exports.
 
 ## Code Style
 
