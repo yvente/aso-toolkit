@@ -153,6 +153,10 @@ def validate_metadata(metadata: dict[str, Any]) -> dict[str, int]:
         counts[field] = len(value)
 
     keywords = normalize_keywords(metadata["keywords"])
+    if len(keywords) != len(metadata["keywords"]):
+        raise ValidationError("keywords must not contain case-insensitive duplicates")
+    if keywords != metadata["keywords"]:
+        raise ValidationError("keywords must not contain leading or trailing whitespace")
     counts["keywords"] = len(",".join(keywords))
 
     exceeded = [
@@ -206,7 +210,14 @@ def validate_metadata_document(
         if not isinstance(document.get("generated_at"), str) or not document["generated_at"].strip():
             raise ValidationError("proposed metadata generated_at must be a non-empty string")
         version = validate_version(document.get("target_version"))
-        validate_version(document.get("baseline_version"))
+        release_type = document.get("release_type", "update")
+        if not isinstance(release_type, str) or release_type not in {"update", "first_release"}:
+            raise ValidationError("release_type must be 'update' or 'first_release'")
+        if release_type == "first_release":
+            if "baseline_version" not in document or document["baseline_version"] is not None:
+                raise ValidationError("first_release requires explicit baseline_version: null")
+        else:
+            validate_version(document.get("baseline_version"))
         if "version" in document:
             raise ValidationError("proposed metadata must use target_version, not version")
         if expected_version is not None and version != validate_version(expected_version):
@@ -215,6 +226,51 @@ def validate_metadata_document(
     if filename is not None and filename != expected_name:
         raise ValidationError(f"{role} metadata filename must be {expected_name}")
     return {"role": role, "version": version, "locale": locale, "counts": validate_metadata(metadata)}
+
+
+def audit_metadata(
+    metadata: dict[str, Any], *, temporary_names: list[str] | None = None,
+    keyword_review_below: int = 95,
+) -> dict[str, Any]:
+    """Read-only diagnostics, deliberately not a commercial-quality verdict."""
+    if not isinstance(keyword_review_below, int) or not 0 <= keyword_review_below <= FIELD_LIMITS["keywords"]:
+        raise ValidationError("keyword review threshold must be between 0 and 100 characters")
+    counts = validate_metadata(metadata)
+    warnings: list[dict[str, Any]] = []
+    if counts["keywords"] < keyword_review_below:
+        warnings.append({
+            "code": "unused_keyword_space",
+            "message": "Review relevant omitted queries and explain unused space; do not pad to meet a length target.",
+        })
+    # Unicode exact words/phrases only: no claimed stemming, CJK segmentation or indexing simulation.
+    title_copy = (metadata["app_name"] + " " + metadata["subtitle"]).casefold()
+    overlaps = []
+    for keyword in metadata["keywords"]:
+        if re.search(r"(?<!\w)" + re.escape(keyword.casefold()) + r"(?!\w)", title_copy):
+            overlaps.append(keyword)
+    if overlaps:
+        warnings.append({"code": "title_keyword_overlap", "keywords": overlaps})
+    found_names = [name for name in (temporary_names or []) if name and name.casefold() in title_copy]
+    if found_names:
+        warnings.append({"code": "temporary_name_in_copy", "names": found_names})
+    if metadata["app_name"].casefold() == metadata["subtitle"].casefold():
+        warnings.append({"code": "subtitle_repeats_title"})
+    return {
+        "technical_valid": True,
+        "counts": counts,
+        "keyword_characters_remaining": FIELD_LIMITS["keywords"] - counts["keywords"],
+        "warnings": warnings,
+        "business_review": "required",
+        "limitations": "Exact text diagnostics only; not native-language, relevance, demand or ranking validation.",
+    }
+
+
+def audit_metadata_file(args: argparse.Namespace) -> dict[str, Any]:
+    document = load_json(Path(args.file))
+    return audit_metadata(
+        metadata_snapshot(document), temporary_names=args.temporary_name,
+        keyword_review_below=args.keyword_review_below,
+    )
 
 
 def metadata_snapshot(document: dict[str, Any]) -> dict[str, Any]:
@@ -315,6 +371,16 @@ def init_project(args: argparse.Namespace) -> dict[str, Any]:
     files = {
         aso_dir / "APP_BRIEF.md": (
             f"# App Brief\n\n> Last updated: {date.today().isoformat()}\n\n"
+            "## Identity and Release Context\n\n"
+            f"- Working/project name: {args.app_name} (not automatically a confirmed brand).\n"
+            "- App Store ID / bundle ID / verified source:\n"
+            "- Release mode: first_release / update / unknown.\n"
+            "- Brand status: temporary / confirmed / none / unknown.\n"
+            "- Naming strategy: functional / hybrid / brand-led / undecided.\n"
+            "- Acquisition goal, constraints and existing authorization:\n\n"
+            "## Markets and Capability Boundaries\n\n"
+            "- Interface languages, store locales and storefront countries (map separately):\n"
+            "- Implemented / proposed / device-dependent features and evidence:\n\n"
             "## Core Features\n\n## Target Users\n\n## Key Differentiators\n\n"
             "## Recent Changes\n"
         ),
@@ -478,6 +544,8 @@ def append_experiment(args: argparse.Namespace) -> dict[str, Any]:
     locale = validate_locale(args.locale)
     before_document = load_json(Path(args.before))
     after_document = load_json(Path(args.after))
+    if after_document.get("release_type") == "first_release":
+        raise ValidationError("first releases have no before/after baseline; keep their design in optimize.md")
     before = metadata_snapshot(before_document)
     after = metadata_snapshot(after_document)
     if before_document.get("role") is not None:
@@ -650,6 +718,12 @@ def build_parser() -> argparse.ArgumentParser:
     metadata.add_argument("--version")
     metadata.add_argument("--locale")
     metadata.set_defaults(handler=validate_metadata_file)
+
+    audit = subparsers.add_parser("audit-metadata", help="Review text and space usage; not a quality approval")
+    audit.add_argument("--file", required=True)
+    audit.add_argument("--temporary-name", action="append", default=[])
+    audit.add_argument("--keyword-review-below", type=int, default=95)
+    audit.set_defaults(handler=audit_metadata_file)
 
     append = subparsers.add_parser("append-experiment")
     append.add_argument("--log", required=True)

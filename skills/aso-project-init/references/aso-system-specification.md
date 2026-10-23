@@ -1,6 +1,6 @@
 # ASO Toolkit System Specification
 
-This is the canonical 0.3.0 cross-skill contract. Skill-specific methods may add detail but must not redefine these paths, roles, or state transitions.
+This is the canonical 0.4.0 cross-skill contract. Skill-specific methods may add detail but must not redefine these paths, roles, or state transitions.
 
 ## Lifecycle
 
@@ -16,6 +16,15 @@ aso-project-init
 ```
 
 Research may be refreshed after meaningful product or market changes. Keyword generation is optional when valid measured keyword data already exists for the same version and locale.
+
+## Decision gates and completion
+
+- **Context:** product evidence, acquisition objective, release mode, brand status and authorized naming scope are explicit in the brief. A configured name is not necessarily a fixed brand; missing public results do not prove an app is unpublished.
+- **Keyword handoff:** native primary intents and alternatives have been expanded; source diversity, measurement scope, exclusions, gaps and the stopping reason are recorded in `keywords.md`. Counts alone are not a completion condition. Missing evidence may produce an exploratory draft, not a disguised data-backed recommendation.
+- **Selection:** `optimize.md` compares meaningful naming/field options and explains query-to-token provenance, qualified coverage, space usage and unresolved tradeoffs. No universal score or exact length proves an optimum.
+- **Delivery:** report technical validity, decision-quality review and release readiness separately. Passing a validator or exporting a workbook establishes neither business effectiveness nor approval to publish.
+
+Reuse already supplied decisions and authorized scope. Do not add repeated confirmation flows; obtain new authorization only where the next action requires it. Provider-specific APIs are optional; [measurement workflow](data-provider-workflow.md) applies when acquiring data or mutating tracking.
 
 ## Project layout
 
@@ -58,7 +67,7 @@ Do not add parallel status trees such as `drafts/`, `archive/`, `current/`, `sha
 - Project init owns the shared ASO documentation, brief template, `versions/` directory, and initial app profile.
 - Research writes `research.md` and evidence under the same target-version/locale directory.
 - Keywords writes `keywords.md` and writes `keyword-measurements-<YYYY-MM-DD>.csv` only when real measurements were obtained or formed.
-- Optimize writes `optimize.md`, one live baseline snapshot, the proposed snapshot, and `deliverable.xlsx` in the same directory.
+- Optimize writes `optimize.md`, a live baseline snapshot for updates only, the proposed snapshot, and `deliverable.xlsx` in the same directory.
 - Learn writes `learn.md` only after release and real observations, then safely updates root `experiment_log.json` and `app-profile.json`.
 - No skill publishes metadata or changes App Store Connect without a separate explicit request and an appropriate connected tool.
 
@@ -107,6 +116,7 @@ The source and capture date must make the baseline auditable. Never copy propose
   "schema_version": 1,
   "role": "proposed",
   "target_version": "1.1.0",
+  "release_type": "update",
   "baseline_version": "1.0.0",
   "locale": "en-US",
   "generated_at": "2026-01-02",
@@ -121,6 +131,8 @@ The source and capture date must make the baseline auditable. Never copy propose
 }
 ```
 
+For a confirmed first release, set `release_type` to `first_release` and explicitly set `baseline_version` to `null`. Omit the live file; do not invent an `unreleased` version or a before snapshot. First-release design stays in `optimize.md` until real observations exist. For compatibility, proposals lacking `release_type` are treated as updates and still require a baseline version. Unknown release status is not automatically first-release status.
+
 The filename, role, target version, and locale must agree with the containing directory. `deliverable.xlsx` is a readable delivery layer derived from this JSON, never a separately maintained source. A complete optimize run must generate and verify the workbook against the proposed JSON. If the environment truly lacks spreadsheet creation capability, report the run as blocked; do not omit, fake, or substitute the workbook silently.
 
 Keywords are arrays of individual strings in JSON and render comma-separated without spaces for submission. Default validation limits are:
@@ -133,6 +145,8 @@ Keywords are arrays of individual strings in JSON and render comma-separated wit
 | Promotional Text | 170 |
 | Description | 4000 |
 | What's New | 4000 |
+
+`validate-metadata` checks representation and limits; duplicate keywords or silently trimmed submission values are invalid. `audit-metadata` provides non-fatal space/exact-overlap/temporary-name warnings (default short-field review threshold: 95 characters, configurable). It always leaves business review required, even for a full field. Review useful unused capacity; do not pad to suppress a warning. Explain CJK/inflection ambiguities rather than treating the audit as an indexing engine.
 
 Treat limits and indexing behavior as versioned policy. Verify current Apple documentation when accuracy depends on current rules.
 

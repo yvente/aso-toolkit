@@ -39,7 +39,7 @@ Each step hands its output to the next:
 - `$aso-project-init` creates the one shared `aso/APP_BRIEF.md`, `aso/versions/`, and `app-profile.json`, then prepares `aso/versions/<target-version>/<locale>/` on request.
 - `$aso-research` writes competitor, review, screenshot, and positioning evidence to that version/locale directory.
 - `$aso-keywords` consumes same-locale evidence and produces a measurement backlog there.
-- `$aso-optimize` separates verified `live-<baseline-version>.json` from `proposed-<target-version>.json`, derives one locale-specific `deliverable.xlsx`, and records a proposed experiment.
+- `$aso-optimize` separates verified update-only `live-<baseline-version>.json` from `proposed-<target-version>.json`, derives one locale-specific `deliverable.xlsx`, and records a proposed before/after experiment only when a real update baseline exists.
 - `$aso-learn` runs only after release and real observations, writes `learn.md`, and updates root learning state.
 
 ## Install
@@ -121,11 +121,21 @@ python3 scripts/aso_toolkit.py validate-metadata --file proposed-1.1.0.json --ro
 python3 scripts/aso_toolkit.py compare-metrics --before before.csv --after after.csv
 ```
 
+`audit-metadata` adds review warnings without treating a full field as proof of commercial quality:
+
+```bash
+python3 scripts/aso_toolkit.py audit-metadata --file proposed-1.1.0.json --temporary-name "Working Name"
+```
+
+0.4.0 adds expansion/selection gates, explicit temporary-brand handling and a first-release mode. A confirmed first-release proposal uses `release_type: "first_release"` and `baseline_version: null`, generates no live snapshot and does not fabricate a before/after experiment. Well-formed update proposals without `release_type` remain compatible. Duplicate keywords and padded submission values that were previously silently normalized are now rejected; fix those inputs explicitly.
+
+Expand and measure according to intent coverage and decision impact, not a fixed quota. Near-full keywords are useful only when they add relevant coverage; 100 characters and a large measured pool do not establish an optimum. Validation, decision-quality review and release readiness are reported separately. Read the [provider workflow](references/data-provider-workflow.md) before external data mutations, especially uncertain/partial writes.
+
 It validates metadata limits and JSON state, appends locale-specific experiment rounds atomically, compares metrics, and recomputes learning statistics idempotently.
 
-## 0.3.0 workspace
+## 0.4.0 workspace
 
-ASO Toolkit 0.3.0 is version-first and locale-second:
+ASO Toolkit 0.4.0 keeps the 0.3.0 version-first, locale-second layout:
 
 ```text
 aso/

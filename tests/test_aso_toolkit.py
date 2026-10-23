@@ -45,6 +45,72 @@ def metadata_document(role, version, locale="en-US", **overrides):
 
 
 class MetadataTests(unittest.TestCase):
+    def test_duplicate_keywords_cannot_hide_rendered_overflow(self):
+        with self.assertRaises(aso.ValidationError):
+            aso.validate_metadata(metadata(keywords=["x" * 60, "X" * 60]))
+
+    def test_submission_keywords_do_not_silently_trim(self):
+        with self.assertRaises(aso.ValidationError):
+            aso.validate_metadata(metadata(keywords=[" focus "]))
+
+    def test_first_release_has_no_invented_baseline(self):
+        proposed = metadata_document("proposed", "1.0.0")
+        proposed.update(release_type="first_release", baseline_version=None)
+        aso.validate_metadata_document(proposed, filename="proposed-1.0.0.json")
+        for baseline in ("unreleased", "1.0.0", ""):
+            proposed["baseline_version"] = baseline
+            with self.assertRaises(aso.ValidationError):
+                aso.validate_metadata_document(proposed)
+        del proposed["baseline_version"]
+        with self.assertRaises(aso.ValidationError):
+            aso.validate_metadata_document(proposed)
+
+    def test_null_baseline_is_not_an_update_and_live_stays_strict(self):
+        proposed = metadata_document("proposed", "1.0.0")
+        proposed["baseline_version"] = None
+        with self.assertRaises(aso.ValidationError):
+            aso.validate_metadata_document(proposed)
+        proposed.update(release_type="unknown")
+        with self.assertRaises(aso.ValidationError):
+            aso.validate_metadata_document(proposed)
+        live = metadata_document("live", "1.0.0")
+        live.pop("source")
+        with self.assertRaises(aso.ValidationError):
+            aso.validate_metadata_document(live)
+
+    def test_sparse_keywords_warn_without_forcing_padding(self):
+        source = metadata(keywords=["pomodoro"])
+        before = json.dumps(source)
+        result = aso.audit_metadata(source)
+        self.assertTrue(result["technical_valid"])
+        self.assertEqual(result["keyword_characters_remaining"], 92)
+        self.assertIn("unused_keyword_space", {w["code"] for w in result["warnings"]})
+        self.assertEqual(json.dumps(source), before)
+
+    def test_full_field_is_not_a_business_quality_approval(self):
+        result = aso.audit_metadata(metadata(keywords=["字" * 100]))
+        self.assertEqual(result["keyword_characters_remaining"], 0)
+        self.assertEqual(result["business_review"], "required")
+        self.assertNotIn("unused_keyword_space", {w["code"] for w in result["warnings"]})
+
+    def test_overlap_is_case_insensitive_but_not_an_indexing_simulation(self):
+        result = aso.audit_metadata(metadata(app_name="Smart Focus", keywords=["focus", "art"]))
+        overlap = next(w for w in result["warnings"] if w["code"] == "title_keyword_overlap")
+        self.assertEqual(overlap["keywords"], ["focus"])
+
+    def test_temporary_name_and_subtitle_repetition_are_reviewed(self):
+        result = aso.audit_metadata(
+            metadata(app_name="DraftName", subtitle="draftname"), temporary_names=["DRAFTNAME"]
+        )
+        self.assertTrue({"temporary_name_in_copy", "subtitle_repeats_title"} <= {w["code"] for w in result["warnings"]})
+
+    def test_audit_threshold_is_configurable_and_bounded(self):
+        result = aso.audit_metadata(metadata(keywords=["focus"]), keyword_review_below=0)
+        self.assertNotIn("unused_keyword_space", {w["code"] for w in result["warnings"]})
+        for value in (-1, 101, 2.5):
+            with self.assertRaises(aso.ValidationError):
+                aso.audit_metadata(metadata(), keyword_review_below=value)
+
     def test_valid_metadata_counts_rendered_keywords(self):
         counts = aso.validate_metadata(metadata())
         self.assertEqual(counts["keywords"], len("productivity,pomodoro"))
@@ -159,8 +225,32 @@ class LayoutTests(unittest.TestCase):
             self.assertIn("Manually move", result["warnings"][0])
             self.assertEqual(legacy.read_bytes(), before)
 
+    def test_first_release_project_needs_no_fake_live_file(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            aso.init_project(self.init_args(root))
+            args = self.prepare_args(root, version="1.0.0")
+            work = Path(aso.prepare_version(args)["path"])
+            proposal = metadata_document("proposed", "1.0.0")
+            proposal.update(release_type="first_release", baseline_version=None)
+            (work / "proposed-1.0.0.json").write_text(json.dumps(proposal))
+            self.assertTrue(aso.validate_project(args)["valid"])
+            self.assertFalse(list(work.glob("live-*.json")))
+
 
 class StateTests(unittest.TestCase):
+    def test_first_release_cannot_create_fabricated_before_after_history(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            before, after, log = root / "before.json", root / "after.json", root / "log.json"
+            before.write_text(json.dumps(metadata()))
+            proposal = metadata_document("proposed", "1.0.0")
+            proposal.update(release_type="first_release", baseline_version=None)
+            after.write_text(json.dumps(proposal))
+            with self.assertRaises(aso.ValidationError):
+                aso.append_experiment(Namespace(log=str(log), before=str(before), after=str(after), locale="en-US"))
+            self.assertFalse(log.exists())
+
     def test_append_experiment_increments_per_locale(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
@@ -225,6 +315,11 @@ class PackagingTests(unittest.TestCase):
                 / "aso-system-specification.md"
             )
             self.assertEqual(bundled_reference.read_bytes(), canonical_reference, name)
+            self.assertEqual(
+                (skill_root / name / "references" / "data-provider-workflow.md").read_bytes(),
+                (root / "references" / "data-provider-workflow.md").read_bytes(),
+                name,
+            )
 
         canonical_helper = (root / "scripts" / "aso_toolkit.py").read_bytes()
         for name in ["aso-project-init", "aso-optimize", "aso-learn"]:
@@ -253,7 +348,7 @@ class PackagingTests(unittest.TestCase):
             (root / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")
         )
         self.assertEqual(manifest["skills"], "./skills/")
-        self.assertEqual(manifest["version"], "0.3.0")
+        self.assertEqual(manifest["version"], "0.4.0")
 
 
 if __name__ == "__main__":

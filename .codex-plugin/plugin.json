@@ -1,6 +1,6 @@
 {
   "name": "aso-toolkit",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Research, optimize, and learn from App Store Optimization experiments.",
   "author": {
     "name": "yvente",
@@ -9,7 +9,13 @@
   "homepage": "https://github.com/yvente/aso-toolkit",
   "repository": "https://github.com/yvente/aso-toolkit",
   "license": "MIT",
-  "keywords": ["aso", "app-store", "keywords", "metadata", "ios"],
+  "keywords": [
+    "aso",
+    "app-store",
+    "keywords",
+    "metadata",
+    "ios"
+  ],
   "skills": "./skills/",
   "interface": {
     "displayName": "ASO Toolkit",
@@ -17,7 +23,11 @@
     "longDescription": "Build an app profile, research competitors, generate localized keyword candidates, optimize App Store metadata, and learn from before/after experiments.",
     "developerName": "yvente",
     "category": "Productivity",
-    "capabilities": ["Research", "Data analysis", "File generation"],
+    "capabilities": [
+      "Research",
+      "Data analysis",
+      "File generation"
+    ],
     "websiteURL": "https://github.com/yvente/aso-toolkit",
     "defaultPrompt": [
       "Initialize ASO for this iOS app.",

@@ -15,7 +15,11 @@ Bridge product research and quantitative keyword tooling within one target-versi
 
 Read [the shared system specification](references/aso-system-specification.md), then [the candidate method](references/candidate-method.md).
 
-Generate 40–60 unique candidates across `broad`, `feature`, `problem_intent`, and `long_tail`; assign evidence-backed P0/P1/P2 priority; keep terms in the target storefront language; and preserve phrases useful for rank lookup. Never invent features, search volume, difficulty, rank, or traffic.
+Expand across `broad`, `feature`, `problem_intent`, and `long_tail` using native market vocabulary, competitors, reviews and verified product workflows. Choose breadth from the market and assignment; a fixed candidate count, translated template or language-name Cartesian product is not completion. Assign evidence-backed P0/P1/P2 research priority and preserve phrases for lookup. Never invent features, search volume, difficulty, rank, or traffic.
+
+Before handing off to optimization, record coverage, measured/unmeasured scope, unresolved high-impact queries, excluded terms and why another expansion wave would or would not change the selection. If title-driving terms are unmeasured or major intent gaps remain, hand off an explicitly exploratory backlog rather than a measurement-backed recommendation. See the candidate method for this gate.
+
+When fetching provider data or changing tracking, read [measurement workflow](references/data-provider-workflow.md); do not assume batch writes are atomic or replay uncertain writes.
 
 Write:
 

@@ -10,7 +10,7 @@ Initialize ASO state without changing app source code, migrating legacy files, o
 ## Inputs
 
 - App root: use the user-provided path, otherwise the current working directory.
-- App name: infer it from first-party project configuration when reliable; otherwise ask.
+- Working/project name: infer it from first-party configuration when reliable; otherwise ask. This is not confirmation of a fixed marketing brand. Record release mode, brand status, naming scope and market/capability boundaries in the brief from available evidence; unresolved facts remain unknown rather than guessed.
 - Locale: default to `en-US` for initialization.
 - Target version and locale: require both when preparing a work directory.
 

@@ -1,6 +1,15 @@
 # Keyword Candidate Method
 
-Generate a broad measurement set before optimizing metadata.
+Generate a broad measurement set before optimizing metadata. This is an iterative coverage task, not a candidate-count quota.
+
+## Expansion and handoff gate
+
+1. Map the primary job, native category words/synonyms and core feature queries before adding audience, problem and language-pair tails. Keep product limits visible; a keyword's popularity cannot make an unsupported feature relevant.
+2. Expand from more than a translated seed list: same-store competitor names/subtitles, local review vocabulary and concrete workflows. Preserve per-query provenance, including whether wording is observed or generated. Review extracted brand terms and ambiguous words before adopting them.
+3. Measure the plausible title/subtitle drivers and meaningful alternative intents first, then use what the measurements reveal to expand missing areas. Retain unmeasured candidates as hypotheses. No universal candidate count or measured percentage proves sufficient coverage.
+4. State a stopping reason: core intents and leading alternatives are covered, successive waves have diminishing relevant discoveries, or a declared budget/provider limitation prevents more work. List remaining gaps and their likely decision impact. Do not silently turn a limited sample into a final claim of optimality.
+
+`keywords.md` must summarize source diversity, candidate/measured counts, rejected concepts, unresolved queries and readiness (`exploratory` or `ready for selection`). A small focused app can justify a compact pool; a broad app may need substantially more. Neither 40 candidates nor 100 measured queries is an automatic pass.
 
 ## Intent groups
 
