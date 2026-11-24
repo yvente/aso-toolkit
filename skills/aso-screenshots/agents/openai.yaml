@@ -1,0 +1,4 @@
+interface:
+  display_name: "ASO Screenshots"
+  short_description: "Plan the App Store screenshot storyboard."
+  default_prompt: "Use $aso-screenshots to plan the screenshot storyboard for this release."

@@ -1,6 +1,6 @@
 # ASO Toolkit System Specification
 
-This is the canonical 0.4.0 cross-skill contract. Skill-specific methods may add detail but must not redefine these paths, roles, or state transitions.
+This is the canonical 0.5.0 cross-skill contract. Skill-specific methods may add detail but must not redefine these paths, roles, or state transitions.
 
 ## Lifecycle
 
@@ -9,19 +9,21 @@ aso-project-init
   → aso-research
   → aso-keywords
   → aso-optimize
+  → aso-screenshots
   → human review and App Store release
   → collect comparable observed data
   → aso-learn
   → start the next target version without changing completed history
 ```
 
-Research may be refreshed after meaningful product or market changes. Keyword generation is optional when valid measured keyword data already exists for the same version and locale.
+Research may be refreshed after meaningful product or market changes. Keyword generation is optional when valid measured keyword data already exists for the same version and locale. Screenshot planning is optional for a release with no creative change; when run, it belongs to the same target-version/locale, consumes that directory's research (and optimize output when present), and completes before release review.
 
 ## Decision gates and completion
 
 - **Context:** product evidence, acquisition objective, release mode, brand status and authorized naming scope are explicit in the brief. A configured name is not necessarily a fixed brand; missing public results do not prove an app is unpublished.
 - **Keyword handoff:** native primary intents and alternatives have been expanded; source diversity, measurement scope, exclusions, gaps and the stopping reason are recorded in `keywords.md`. Counts alone are not a completion condition. Missing evidence may produce an exploratory draft, not a disguised data-backed recommendation.
 - **Selection:** `optimize.md` compares meaningful naming/field options and explains query-to-token provenance, qualified coverage, space usage and unresolved tradeoffs. No universal score or exact length proves an optimum.
+- **Creative:** `screenshots/screenshot-plan.md` derives every claimed capability from implemented product evidence and the research message sequence; missing feature evidence produces an explicitly provisional storyboard, not a creative claim.
 - **Delivery:** report technical validity, decision-quality review and release readiness separately. Passing a validator or exporting a workbook establishes neither business effectiveness nor approval to publish.
 
 Reuse already supplied decisions and authorized scope. Do not add repeated confirmation flows; obtain new authorization only where the next action requires it. Provider-specific APIs are optional; [measurement workflow](data-provider-workflow.md) applies when acquiring data or mutating tracking.
@@ -45,6 +47,7 @@ Reuse already supplied decisions and authorized scope. Do not add repeated confi
 │           │   ├── keyword-measurements-<date>.csv
 │           │   ├── deliverable.xlsx
 │           │   ├── screenshots/
+│           │   │   └── screenshot-plan.md
 │           │   └── learn.md
 │           ├── ja/
 │           └── zh-Hant/
@@ -68,13 +71,14 @@ Do not add parallel status trees such as `drafts/`, `archive/`, `current/`, `sha
 - Research writes `research.md` and evidence under the same target-version/locale directory.
 - Keywords writes `keywords.md` and writes `keyword-measurements-<YYYY-MM-DD>.csv` only when real measurements were obtained or formed.
 - Optimize writes `optimize.md`, a live baseline snapshot for updates only, the proposed snapshot, and `deliverable.xlsx` in the same directory.
+- Screenshots writes `screenshots/screenshot-plan.md` in the same directory and saves exported creative assets only when the user provides them; it never fabricates device screenshots or publishes creatives.
 - Learn writes `learn.md` only after release and real observations, then safely updates root `experiment_log.json` and `app-profile.json`.
 - No skill publishes metadata or changes App Store Connect without a separate explicit request and an appropriate connected tool.
 
 ## Locale isolation
 
 - Use App Store locale identifiers and record the target storefront country explicitly.
-- Keep metadata, research evidence, measurements, conclusions, and the workbook isolated by locale.
+- Keep metadata, research evidence, measurements, conclusions, the workbook, and the screenshot plan isolated by locale.
 - Never use one locale's keyword measurements as proof for another locale.
 - Each locale has its own `deliverable.xlsx`; do not create a combined multilingual workbook.
 

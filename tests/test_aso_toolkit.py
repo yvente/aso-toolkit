@@ -295,6 +295,7 @@ class PackagingTests(unittest.TestCase):
             "aso-research",
             "aso-keywords",
             "aso-optimize",
+            "aso-screenshots",
             "aso-learn",
         ]
         for name in names:
@@ -348,7 +349,7 @@ class PackagingTests(unittest.TestCase):
             (root / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")
         )
         self.assertEqual(manifest["skills"], "./skills/")
-        self.assertEqual(manifest["version"], "0.4.1")
+        self.assertEqual(manifest["version"], "0.5.0")
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 # ASO Toolkit
 
-ASO Toolkit is an agent plugin for Codex and ZCode containing six focused skills for repeatable App Store Optimization work: product research, keyword discovery, metadata experiments, and post-release learning.
+ASO Toolkit is an agent plugin for Codex and ZCode containing seven focused skills for repeatable App Store Optimization work: product research, keyword discovery, metadata experiments, screenshot storyboards, and post-release learning.
 
 It can consume keyword exports from ASOMinds, Astro, or similar tools. Those services provide measurement data; ASO Toolkit turns the data and the app's actual product context into a reviewable optimization loop.
 
@@ -13,6 +13,7 @@ It can consume keyword exports from ASOMinds, Astro, or similar tools. Those ser
 | `$astro-aso-data` | Collect Astro keyword measurements and export Storeward ranking snapshots | `keyword-measurements-<date>.csv`, `keyword-rank-snapshots-<version>-<storefront>.csv` |
 | `$aso-keywords` | Generate a localized measurement backlog | `aso/versions/<version>/<locale>/keywords.md` |
 | `$aso-optimize` | Propose validated metadata and derive a workbook | `proposed-<version>.json`, `deliverable.xlsx` |
+| `$aso-screenshots` | Plan the first-three-slots screenshot storyboard | `aso/versions/<version>/<locale>/screenshots/screenshot-plan.md` |
 | `$aso-learn` | Evaluate a released version from observed data | `learn.md`, `app-profile.json` |
 
 The canonical contract for paths, schemas, state ownership, locales, and metadata is in [`references/aso-system-specification.md`](references/aso-system-specification.md). Each installable skill carries the reference material and helper scripts it needs, so standalone installation does not depend on files outside the skill directory.
@@ -25,6 +26,8 @@ $aso-project-init
 $aso-research → $aso-keywords
         ↓             ↓ measured keyword CSVs
         └──────→ $aso-optimize
+                       ↓
+                 $aso-screenshots
                        ↓ human review and App Store release
              collect comparable metrics
                        ↓
@@ -42,6 +45,7 @@ Each step hands its output to the next:
 - `$astro-aso-data` collects tracked data and validates [Storeward ranking snapshots](references/astro-ranking-snapshot.md). Astro MCP is needed for fresh measurements.
 - `$aso-keywords` consumes same-locale evidence and produces a measurement backlog there.
 - `$aso-optimize` separates verified update-only `live-<baseline-version>.json` from `proposed-<target-version>.json`, derives one locale-specific `deliverable.xlsx`, and records a proposed before/after experiment only when a real update baseline exists.
+- `$aso-screenshots` turns verified features and competitor patterns into a screenshot storyboard plan for the same version/locale directory.
 - `$aso-learn` runs only after release and real observations, writes `learn.md`, and updates root learning state.
 
 ## Install
@@ -55,7 +59,7 @@ codex plugin marketplace add yvente/aso-toolkit
 codex plugin add aso-toolkit@aso-toolkit
 ```
 
-Start a new Codex task after installation. The plugin bundles all six skills and keeps them on the same version.
+Start a new Codex task after installation. The plugin bundles all seven skills and keeps them on the same version.
 
 ### Install with ZCode
 
@@ -72,6 +76,7 @@ skills/aso-research
 skills/astro-aso-data
 skills/aso-keywords
 skills/aso-optimize
+skills/aso-screenshots
 skills/aso-learn
 ```
 
@@ -99,6 +104,7 @@ $aso-research Research benchmark competitors for this app in en-US.
 $astro-aso-data Export and validate an Astro ranking snapshot for Storeward.
 $aso-keywords Generate a localized keyword measurement backlog.
 $aso-optimize Propose and validate the next metadata experiment.
+$aso-screenshots Plan the App Store screenshot storyboard for this release.
 $aso-learn Evaluate round 1 from the supplied before/after CSV files.
 ```
 
@@ -110,7 +116,8 @@ Run the workflow in the target app repository. Generated ASO state belongs to th
 2. `$aso-research Research benchmark competitors for version 1.1.0 in en-US.` — review `aso/versions/1.1.0/en-US/research.md`.
 3. `$aso-keywords Generate the en-US keyword measurement backlog for version 1.1.0.` — review `keywords.md` in the same directory.
 4. `$aso-optimize Propose and validate en-US metadata for version 1.1.0 from the verified 1.0.0 live baseline.` — review the proposed JSON and its derived `deliverable.xlsx`, then release through App Store Connect yourself.
-5. After release and a real observation window, collect before/after metrics and run `$aso-learn Evaluate released version 1.1.0 in en-US.` The result lands beside the version artifacts and updates root learning state.
+5. `$aso-screenshots Plan the en-US screenshot storyboard for version 1.1.0.` — review `screenshots/screenshot-plan.md` and execute it in your design tool before release.
+6. After release and a real observation window, collect before/after metrics and run `$aso-learn Evaluate released version 1.1.0 in en-US.` The result lands beside the version artifacts and updates root learning state.
 
 ## Deterministic helper
 
@@ -135,11 +142,13 @@ python3 scripts/aso_toolkit.py audit-metadata --file proposed-1.1.0.json --tempo
 
 Expand and measure according to intent coverage and decision impact, not a fixed quota. Near-full keywords are useful only when they add relevant coverage; 100 characters and a large measured pool do not establish an optimum. Validation, decision-quality review and release readiness are reported separately. Read the [provider workflow](references/data-provider-workflow.md) before external data mutations, especially uncertain/partial writes.
 
+0.5.0 adds `$aso-screenshots` for per-locale screenshot storyboards.
+
 It validates metadata limits and JSON state, appends locale-specific experiment rounds atomically, compares metrics, and recomputes learning statistics idempotently.
 
-## 0.4.0 workspace
+## 0.5.0 workspace
 
-ASO Toolkit 0.4.0 keeps the 0.3.0 version-first, locale-second layout:
+ASO Toolkit 0.5.0 keeps the 0.3.0 version-first, locale-second layout:
 
 ```text
 aso/
@@ -155,6 +164,7 @@ aso/
     ├── keyword-measurements-<date>.csv
     ├── deliverable.xlsx
     ├── screenshots/
+    │   └── screenshot-plan.md
     └── learn.md
 ```
 
@@ -167,7 +177,7 @@ The helper detects 0.2.x root-level reports and `aso/metadata/` but never migrat
 ```bash
 python3 -m unittest discover -s tests -v
 
-for skill in skills/aso-project-init skills/aso-research skills/astro-aso-data skills/aso-keywords skills/aso-optimize skills/aso-learn; do
+for skill in skills/aso-project-init skills/aso-research skills/astro-aso-data skills/aso-keywords skills/aso-optimize skills/aso-screenshots skills/aso-learn; do
   python3 /path/to/skill-creator/scripts/quick_validate.py "$skill"
 done
 
@@ -177,7 +187,7 @@ git diff --check
 
 ## Status
 
-- [x] Five Codex Skills
+- [x] Seven Codex skills
 - [x] Shared state/schema specification
 - [x] Deterministic validation and experiment helpers
 - [x] Plugin manifest
