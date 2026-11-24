@@ -142,7 +142,7 @@ python3 scripts/aso_toolkit.py audit-metadata --file proposed-1.1.0.json --tempo
 
 Expand and measure according to intent coverage and decision impact, not a fixed quota. Near-full keywords are useful only when they add relevant coverage; 100 characters and a large measured pool do not establish an optimum. Validation, decision-quality review and release readiness are reported separately. Read the [provider workflow](references/data-provider-workflow.md) before external data mutations, especially uncertain/partial writes.
 
-0.5.0 adds `$aso-screenshots` for per-locale screenshot storyboards.
+0.5.0 adds `$aso-screenshots` for per-locale screenshot storyboards and optional Google Trends related queries for `$aso-keywords` candidate discovery. App Store tracker measurements are still used for keyword selection.
 
 It validates metadata limits and JSON state, appends locale-specific experiment rounds atomically, compares metrics, and recomputes learning statistics idempotently.
 

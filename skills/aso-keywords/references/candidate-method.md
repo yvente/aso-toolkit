@@ -32,9 +32,18 @@ Derive candidates from:
 - audience/context combinations;
 - benchmark App Names and subtitles;
 - review vocabulary;
-- uncovered product differentiators.
+- uncovered product differentiators;
+- store-external demand signals such as Google Trends related queries (see below).
 
 Do not turn every word in competitor copy into a candidate. Exclude competitor brands, unsupported capabilities, vague adjectives, articles, and queries with no plausible user intent.
+
+## Store-external demand signals (Google Trends)
+
+Google Trends related queries can supply candidate phrases from web search. Use relevant phrases for discovery and measure them with a storefront tracker before metadata selection. Keep Trends interest scores out of `keyword-measurements`. Those columns hold App Store tracker measurements.
+
+When browsing is available, compare relevant seed terms for the target storefront country and a period relevant to the task. Record the search region, period, query URL when available, and collection date in `keywords.md`. Label user-supplied queries with their provenance. Apply the same relevance, feature-evidence, and deduplication checks used for other candidates.
+
+If Trends is unavailable or gives no useful queries, continue with the available research and tracker evidence. Google Trends coverage is optional. Capture a gap only when it affects the keyword decision.
 
 ## Priority
 
