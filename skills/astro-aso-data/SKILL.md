@@ -44,7 +44,7 @@ Write measurements to `aso/versions/<version>/<locale>/keyword-measurements-<YYY
 
 If the app's `aso/APP_BRIEF.md` exists, read it first: it holds the app's identity block. When a target app's brief lacks an Identity section, create it (App Store ID via Apple bundleId lookup, bundleId, ASC App Info IDs via storeward `list_app_infos`) **before any data pull** — identity comes from there in every future run, never from names or guesses.
 
-For Storeward experiments and released-version rank comparisons, use the separate [ranking snapshot contract](references/astro-ranking-snapshot.md). Validate the CSV with the bundled script before delivery or import. Exported historical tracker observations keep their original timestamps and provenance. Apply the live verification steps above when making a claim about the current App Store ranking.
+For Storeward experiments and released-version rank comparisons, use the Astro desktop CSV format defined in the [ranking snapshot contract](references/astro-ranking-snapshot.md). Validate the CSV with the bundled script before delivery or import. Exported historical tracker observations keep their original timestamps and provenance. Apply the live verification steps above when making a claim about the current App Store ranking.
 
 ## Tools not registered?
 

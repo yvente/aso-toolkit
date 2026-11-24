@@ -1,4 +1,4 @@
-"""Validate the repository's canonical Astro-to-Storeward CSV format."""
+"""Validate the Astro desktop ranking CSV format."""
 
 import argparse
 import csv
@@ -9,7 +9,10 @@ import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
 
-HEADER = ["appStoreId", "storefront", "platform", "keyword", "rank", "lastUpdate"]
+HEADER = [
+    "App Name", "App Id", "Platform", "Keyword", "Store Domain", "Store", "Note",
+    "Last Update", "Ranking", "Change", "Popularity", "Difficulty", "Apps in Ranking", "Tags",
+]
 
 
 def validate(path: Path, app_id: str, storefront: str) -> int:
@@ -30,21 +33,17 @@ def validate(path: Path, app_id: str, storefront: str) -> int:
             raise ValueError("The CSV exceeds the Storeward 1,000-observation limit.")
         if len(row) != len(HEADER):
             raise ValueError(f"Observation {index} has the wrong column count.")
-        row_id, row_store, platform, keyword, rank, timestamp = row
-        if (row_id, row_store, platform) != (app_id, storefront, "iphone"):
+        _, row_id, platform, keyword, row_store, _, _, timestamp, rank, *_ = row
+        if (row_id, row_store, platform) != (app_id, storefront.lower(), "iphone"):
             raise ValueError(f"Observation {index} does not match the App, storefront or device.")
         if not keyword.strip() or len(keyword) > 150 or keyword != keyword.strip():
             raise ValueError(f"Observation {index} has an invalid keyword.")
         if rank and not re.fullmatch(r"(?:[1-9][0-9]{0,2}|1000)", rank):
             raise ValueError(f"Observation {index} has an invalid rank.")
-        match = re.fullmatch(r"([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2})(?:\.([0-9]{1,6}))?(Z|[+-][0-9]{2}:[0-9]{2})", timestamp)
-        if not match:
-            raise ValueError(f"Observation {index} needs an ISO 8601 timestamp with a timezone.")
+        if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} [+-][0-9]{4}", timestamp):
+            raise ValueError(f"Observation {index} needs an Astro desktop timestamp with a timezone.")
         try:
-            base, fraction, offset = match.groups()
-            fraction = (fraction or "").ljust(6, "0")
-            offset = "+00:00" if offset == "Z" else offset
-            observed_at = datetime.fromisoformat(f"{base}.{fraction}{offset}")
+            observed_at = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S %z")
         except ValueError as error:
             raise ValueError(f"Observation {index} has an invalid timestamp.") from error
         if observed_at > now:

@@ -1,27 +1,26 @@
-# Astro ranking snapshot for Storeward
+# Astro ranking snapshots for Storeward
 
-Use this contract when exporting tracked iPhone keyword observations for a Storeward experiment or reading them for `aso-learn`. The selection input `keyword-measurements-<date>.csv` remains a separate artifact for popularity and difficulty.
+Use the Astro desktop app's ranking CSV format for Storeward experiments and `aso-learn` ranking comparisons. The `keyword-measurements-<date>.csv` selection input has its own contract for popularity and difficulty.
 
 ## Export
 
-Write UTF-8 CSV to `aso/versions/<version>/<locale>/keyword-rank-snapshots-<version>-<storefront>.csv` using a CSV writer that quotes commas, quotes and newlines. Use the exact header below for new exports.
+Save an Astro desktop export as UTF-8 CSV at `aso/versions/<version>/<locale>/keyword-rank-snapshots-<version>-<storefront>.csv`. When collecting observations through Astro MCP, write the same columns in the same order with a CSV writer. Keep unavailable auxiliary fields empty and record collection provenance and coverage alongside the file.
 
 ```csv
-appStoreId,storefront,platform,keyword,rank,lastUpdate
-1234567890,US,iphone,"video compressor, offline",1000,2026-11-06T09:00:00Z
-1234567890,US,iphone,"video compressor, offline",22,2026-11-23T09:00:00Z
+App Name,App Id,Platform,Keyword,Store Domain,Store,Note,Last Update,Ranking,Change,Popularity,Difficulty,Apps in Ranking,Tags
+Example App,1234567890,iphone,"video compressor, offline",us,🇺🇸 US,,2026-11-06 09:00:00 +0000,1000,,,,,
+Example App,1234567890,iphone,"video compressor, offline",us,🇺🇸 US,,2026-11-23 09:00:00 +0000,22,,,,,
 ```
 
-- Read the numeric App Store ID and storefront from the target and verify them against Astro. All rows must use one App ID, one uppercase storefront code and `iphone`. Localization such as `en-US` is distinct from storefront `US`.
-- Write one row per keyword and actual Astro observation time. Use the timestamp returned by Astro for that observation, with an ISO 8601 offset or `Z`. UTC normalization is fine. The export time and the date when the file was created are never observation times.
-- Use the target app's tracked ranking data. Ranks `1…999` are positions, `1000` means outside Astro's tracked chart, and an empty rank means unknown. An unknown rank needs a real observation time to be included. A current snapshot or a live App Store search cannot reconstruct missing history.
-- Include all available observations for the requested window. Before and after observations may share a file and are assigned by actual observation date. Keep notes and coverage summaries outside the CSV. Report the actual date range and missing baseline observations separately.
-- Remove exact duplicate observations. A conflict for the same normalized keyword and observation time must be resolved against Astro before delivery. Do not silently choose a rank. Keep each file within 1 MB and 1,000 observations; split larger exports by observation date.
+- Set `App Id` to the numeric App Store ID, `Platform` to `iphone`, and `Store Domain` to the two-letter lowercase storefront. Match the experiment using these three fields. `Store` is a display label such as `🇺🇸 US`. The experiment's localization is tracked separately.
+- Set `Keyword` and `Ranking` from the tracked observation. Ranks 1 through 999 are positions, 1000 means outside Astro's tracked chart, and an empty rank means unknown. An unknown rank still requires an observation timestamp.
+- Write each actual observation time as `yyyy-MM-dd HH:mm:ss ±HHMM` in `Last Update`. UTC with `+0000` is valid. Use Astro's observation time. Preserve earlier observations from the requested window when they exist. A desktop export is a snapshot of the rows and timestamps it contains.
+- Deduplicate identical keyword and timestamp pairs. Resolve conflicting ranks against Astro before exporting. Keep each file within 1 MB and 1,000 observations. Split larger exports by observation date.
 
-Run the Astro skill's bundled validator before delivering or importing the CSV. It checks the header, target identity, rank, timestamp and duplicate keys.
+Run the validator before delivery or import.
 
 ```bash
 python3 <astro-skill-root>/scripts/validate_rank_snapshot.py <file.csv> --app-id <numeric-app-id> --storefront <CC>
 ```
 
-The validator checks shape and scope. Actual observed values must come from Astro. To import manually use Storeward's **导入 Astro 排名 CSV**. If Storeward MCP is connected, `import_aso_keyword_snapshot` accepts the same CSV text. For review, compare the same keyword, storefront and device across the actual release window. A missing rank is unavailable evidence, and two observations outside the tracked chart do not establish a ranking change.
+Use Storeward's **导入 Astro 排名 CSV** button or the CSV input of `import_aso_keyword_snapshot`. Compare observations for the same keyword, storefront, and device across the actual release windows. Report missing observations and the dates covered. Two results outside the tracked chart provide no evidence of a ranking change.
