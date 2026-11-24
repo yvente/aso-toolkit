@@ -20,6 +20,8 @@ python3 <skill-root>/scripts/aso_toolkit.py validate-project --root <app-root> -
 python3 <skill-root>/scripts/aso_toolkit.py compare-metrics --before <before.csv> --after <after.csv>
 ```
 
+For Astro rankings, use the [ranking snapshot contract](references/astro-ranking-snapshot.md) to check identity, storefront, observation times, and coverage. The `compare-metrics` helper compares app-level metric CSVs. Use the ranked observations separately for keyword outcomes.
+
 Verify comparable definitions, storefronts, filters, durations, and confounders. Calculate app-level deltas and usable rank outcomes, distinguish correlation from causation, classify changed keywords, and preserve missing observations as null rather than failure.
 
 Write `aso/versions/<target-version>/<locale>/learn.md`, then update root `app-profile.json` idempotently with `update-profile` and safely maintain `experiment_log.json` according to its existing append-only design. Never overwrite completed version artifacts. Keep default thresholds for fewer than three evaluated experiments. Finish with paths, release/data evidence, confidence, state updates, and the next single experiment.

@@ -1,6 +1,6 @@
 # ASO Toolkit
 
-ASO Toolkit is an agent plugin for Codex and ZCode containing five focused skills for repeatable App Store Optimization work: product research, keyword discovery, metadata experiments, and post-release learning.
+ASO Toolkit is an agent plugin for Codex and ZCode containing six focused skills for repeatable App Store Optimization work: product research, keyword discovery, metadata experiments, and post-release learning.
 
 It can consume keyword exports from ASOMinds, Astro, or similar tools. Those services provide measurement data; ASO Toolkit turns the data and the app's actual product context into a reviewable optimization loop.
 
@@ -10,6 +10,7 @@ It can consume keyword exports from ASOMinds, Astro, or similar tools. Those ser
 |---|---|---|
 | `$aso-project-init` | Initialize and prepare a version/locale workspace | `aso/`, `app-profile.json` |
 | `$aso-research` | Research competitors for one version and locale | `aso/versions/<version>/<locale>/research.md` |
+| `$astro-aso-data` | Collect Astro keyword measurements and export Storeward ranking snapshots | `keyword-measurements-<date>.csv`, `keyword-rank-snapshots-<version>-<storefront>.csv` |
 | `$aso-keywords` | Generate a localized measurement backlog | `aso/versions/<version>/<locale>/keywords.md` |
 | `$aso-optimize` | Propose validated metadata and derive a workbook | `proposed-<version>.json`, `deliverable.xlsx` |
 | `$aso-learn` | Evaluate a released version from observed data | `learn.md`, `app-profile.json` |
@@ -38,6 +39,7 @@ Each step hands its output to the next:
 
 - `$aso-project-init` creates the one shared `aso/APP_BRIEF.md`, `aso/versions/`, and `app-profile.json`, then prepares `aso/versions/<target-version>/<locale>/` on request.
 - `$aso-research` writes competitor, review, screenshot, and positioning evidence to that version/locale directory.
+- `$astro-aso-data` collects tracked data and validates [Storeward ranking snapshots](references/astro-ranking-snapshot.md). Astro MCP is needed for fresh measurements.
 - `$aso-keywords` consumes same-locale evidence and produces a measurement backlog there.
 - `$aso-optimize` separates verified update-only `live-<baseline-version>.json` from `proposed-<target-version>.json`, derives one locale-specific `deliverable.xlsx`, and records a proposed before/after experiment only when a real update baseline exists.
 - `$aso-learn` runs only after release and real observations, writes `learn.md`, and updates root learning state.
@@ -53,7 +55,7 @@ codex plugin marketplace add yvente/aso-toolkit
 codex plugin add aso-toolkit@aso-toolkit
 ```
 
-Start a new Codex task after installation. The plugin bundles all five skills and keeps them on the same version.
+Start a new Codex task after installation. The plugin bundles all six skills and keeps them on the same version.
 
 ### Install with ZCode
 
@@ -67,6 +69,7 @@ In Codex, invoke `$skill-installer` and ask it to install the desired paths from
 $skill-installer Install these skills from yvente/aso-toolkit:
 skills/aso-project-init
 skills/aso-research
+skills/astro-aso-data
 skills/aso-keywords
 skills/aso-optimize
 skills/aso-learn
@@ -93,6 +96,7 @@ Invoke a skill explicitly by typing `$` in Codex, or describe a matching ASO tas
 ```text
 $aso-project-init Initialize ASO for this iOS app in en-US.
 $aso-research Research benchmark competitors for this app in en-US.
+$astro-aso-data Export and validate an Astro ranking snapshot for Storeward.
 $aso-keywords Generate a localized keyword measurement backlog.
 $aso-optimize Propose and validate the next metadata experiment.
 $aso-learn Evaluate round 1 from the supplied before/after CSV files.
@@ -163,7 +167,7 @@ The helper detects 0.2.x root-level reports and `aso/metadata/` but never migrat
 ```bash
 python3 -m unittest discover -s tests -v
 
-for skill in skills/aso-project-init skills/aso-research skills/aso-keywords skills/aso-optimize skills/aso-learn; do
+for skill in skills/aso-project-init skills/aso-research skills/astro-aso-data skills/aso-keywords skills/aso-optimize skills/aso-learn; do
   python3 /path/to/skill-creator/scripts/quick_validate.py "$skill"
 done
 

@@ -348,7 +348,7 @@ class PackagingTests(unittest.TestCase):
             (root / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")
         )
         self.assertEqual(manifest["skills"], "./skills/")
-        self.assertEqual(manifest["version"], "0.4.0")
+        self.assertEqual(manifest["version"], "0.4.1")
 
 
 if __name__ == "__main__":
