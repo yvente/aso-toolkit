@@ -1,6 +1,6 @@
 # ASO Toolkit System Specification
 
-This is the canonical 0.5.0 cross-skill contract. Skill-specific methods may add detail but must not redefine these paths, roles, or state transitions.
+This is the canonical cross-skill contract. Skill-specific methods may add detail but must not redefine these paths, roles, or state transitions.
 
 ## Lifecycle
 

@@ -144,11 +144,13 @@ Expand and measure according to intent coverage and decision impact, not a fixed
 
 0.5.0 adds `$aso-screenshots` for per-locale screenshot storyboards and optional Google Trends related queries for `$aso-keywords` candidate discovery. App Store tracker measurements are still used for keyword selection.
 
+0.6.0 requires the Astro desktop app’s 14-column CSV format for Storeward ranking snapshots. The earlier six-column snapshot format is no longer accepted.
+
 It validates metadata limits and JSON state, appends locale-specific experiment rounds atomically, compares metrics, and recomputes learning statistics idempotently.
 
-## 0.5.0 workspace
+## Workspace
 
-ASO Toolkit 0.5.0 keeps the 0.3.0 version-first, locale-second layout:
+ASO Toolkit keeps the 0.3.0 version-first, locale-second layout:
 
 ```text
 aso/
